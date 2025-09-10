@@ -9,9 +9,6 @@ mkdir -p out/doc
 # Компиляция
 javac -d out/classes src/main/java/*.java
 
-# Тесты (ручной запуск без JUnit тут не делаем, только Gradle)
-# Можно вручную протестировать через Main
-
 # Генерация javadoc
 javadoc -d out/doc src/main/java/*.java
 
