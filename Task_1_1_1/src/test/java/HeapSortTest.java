@@ -35,4 +35,10 @@ public class HeapSortTest {
         int[] arr = { 42 };
         assertArrayEquals(new int[] { 42 }, HeapSort.heapsort(arr));
     }
+
+    @Test
+    void testMain() {
+        String[] args = {};
+        Main.main(args);
+    }
 }
