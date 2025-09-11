@@ -2,33 +2,43 @@
  * Классическая реализация пирамидальной сортировки (heapsort).
  */
 public class HeapSort {
+
+    // Приватный конструктор предотвращает создание экземпляра класса
+    private HeapSort() {
+        throw new UnsupportedOperationException("Utility class - cannot be instantiated");
+    }
+
     /**
      * Метод пирамидальной сортировки.
-     * 
-     * @param arr
-     * @return отсортированный массив
+     *
+     * @param arr исходный массив
+     * @return новый отсортированный массив
      */
     public static int[] heapsort(int[] arr) {
-        int n = arr.length;
+        // создаем копию, чтобы не менять оригинал
+        int[] copy = arr.clone();
+        int n = copy.length;
 
+        // Построение max-heap
         for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(arr, n, i);
+            heapify(copy, n, i);
         }
 
+        // Извлечение элементов из кучи
         for (int i = n - 1; i > 0; i--) {
-            int temp = arr[0];
-            arr[0] = arr[i];
-            arr[i] = temp;
+            int temp = copy[0];
+            copy[0] = copy[i];
+            copy[i] = temp;
 
-            heapify(arr, i, 0);
+            heapify(copy, i, 0);
         }
-        return arr;
+        return copy;
     }
 
     /**
      * Heapify - рекурсивная функция, которая перестраивает подмассив
      * arr[rootIndex..heapSize-1] в пирамидальную форму.
-     * 
+     *
      * @param arr       массив для сортировки
      * @param heapSize  размер кучи
      * @param rootIndex индекс вершины кучи
