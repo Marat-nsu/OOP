@@ -35,4 +35,9 @@ public class HeapSortTest {
         int[] arr = { 42 };
         assertArrayEquals(new int[] { 42 }, HeapSort.heapsort(arr));
     }
+
+    @Test
+    void testNullArray() {
+        assertThrows(NullPointerException.class, () -> HeapSort.heapsort(null));
+    }
 }

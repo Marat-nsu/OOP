@@ -11,10 +11,13 @@ public class HeapSort {
     /**
      * Метод пирамидальной сортировки.
      *
-     * @param arr исходный массив
+     * @param arr исходный массив (не может быть null)
      * @return новый отсортированный массив
      */
     public static int[] heapsort(int[] arr) {
+        if (arr == null) {
+            throw new NullPointerException("Input array must not be null");
+        }
         // создаем копию, чтобы не менять оригинал
         int[] copy = arr.clone();
         int n = copy.length;
