@@ -75,6 +75,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">GameUI</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Класс GameUI представляет пользовательский интерфейс для игры Блэкджек.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -87,7 +88,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">GameUI</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Конструктор GameUI, при создании выводит начальную информацию о игре.</div>
+</div>
 </div>
 </section>
 </li>
@@ -107,7 +110,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startGame()" class="member-name-link">startGame</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Метод для запуска игры.</div>
+</div>
 </div>
 </div>
 </div>
@@ -129,6 +134,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>GameUI</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">GameUI</span>()</div>
+<div class="block">Конструктор GameUI, при создании выводит начальную информацию о игре.</div>
 </section>
 </li>
 </ul>
@@ -143,6 +149,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="startGame()">
 <h3>startGame</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startGame</span>()</div>
+<div class="block">Метод для запуска игры. Он выводит начальную информацию
+ о игре, а затем запускает цикл игры, в котором игрок
+ может выбрать, хочет ли он сыграть еще раунд или нет.
+ Если игрок хочет сыграть еще раунд, то метод playRound()
+ будет вызван. В противном случае, метод displayFinalResults()
+ будет вызван для вывода результатов игры.</div>
 </section>
 </li>
 <li>

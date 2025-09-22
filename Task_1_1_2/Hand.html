@@ -75,6 +75,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Hand</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Класс руки игрока, содержит список карт.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -107,7 +108,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#calculateScore()" class="member-name-link">calculateScore</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Вычисляет общий счет руки, суммируя значения всех карт.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clear()" class="member-name-link">clear</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -170,6 +173,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="calculateScore()">
 <h3>calculateScore</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">calculateScore</span>()</div>
+<div class="block">Вычисляет общий счет руки, суммируя значения всех карт.
+ Если общий счет больше 21 и в руке есть тузы, то значения тузов
+ корректируется до 1 вместо 11.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>общий счет руки</dd>
+</dl>
 </section>
 </li>
 <li>

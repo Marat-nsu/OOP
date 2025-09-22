@@ -75,6 +75,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Game</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Класс Game, содержит в себе методы для управления игрой, также хранит в себе состояние игры.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -89,7 +90,9 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,Player,Dealer)" class="member-name-link">Game</a><wbr>(int&nbsp;decksCount,
  <a href="Player.html" title="class in Unnamed Package">Player</a>&nbsp;player,
  <a href="Dealer.html" title="class in Unnamed Package">Dealer</a>&nbsp;dealer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Конструктор класса Game.</div>
+</div>
 </div>
 </section>
 </li>
@@ -106,7 +109,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#determineRoundWinner()" class="member-name-link">determineRoundWinner</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Определяет победителя в текущем раунде.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Dealer.html" title="class in Unnamed Package">Dealer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDealer()" class="member-name-link">getDealer</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -127,7 +132,9 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#startNewRound()" class="member-name-link">startNewRound</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Метод для начала нового раунда.</div>
+</div>
 </div>
 </div>
 </div>
@@ -151,6 +158,13 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Game</span><wbr><span class="parameters">(int&nbsp;decksCount,
  <a href="Player.html" title="class in Unnamed Package">Player</a>&nbsp;player,
  <a href="Dealer.html" title="class in Unnamed Package">Dealer</a>&nbsp;dealer)</span></div>
+<div class="block">Конструктор класса Game.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>decksCount</code> - Количество колод в игре.</dd>
+<dd><code>player</code> - Игрок.</dd>
+<dd><code>dealer</code> - Дилер.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -165,12 +179,19 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="startNewRound()">
 <h3>startNewRound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startNewRound</span>()</div>
+<div class="block">Метод для начала нового раунда.
+ Очищает руки игрока и дилера, а затем раздает по две карты каждому.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="determineRoundWinner()">
 <h3>determineRoundWinner</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">determineRoundWinner</span>()</div>
+<div class="block">Определяет победителя в текущем раунде.
+ Сравнивает счета игрока и дилера в зависимости от результатов сравнения их рук.
+ Если один из игроков имеет блэкджек, то другой игрок автоматически выигрывает.
+ Если оба руки имеют одинаковое количество очков, то счет не меняется.
+ После определения победителя раунда, счет раунда увеличивается на 1.</div>
 </section>
 </li>
 <li>
