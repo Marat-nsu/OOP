@@ -1,3 +1,6 @@
+/**
+ * Вспомогательный класс для тестирования DecisionStrategy.
+ */
 public class TestDecisionStrategy implements DecisionStrategy {
     private final boolean[] decisions;
     private int decisionIndex = 0;

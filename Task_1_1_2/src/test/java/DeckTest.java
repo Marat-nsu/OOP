@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Класс для тестирования класса Deck.
+ */
 public class DeckTest {
 
     @Test

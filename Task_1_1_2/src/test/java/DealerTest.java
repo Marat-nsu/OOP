@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Класс для тестирования класса Dealer.
+ */
 public class DealerTest {
 
     @Test
