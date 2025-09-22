@@ -1,4 +1,4 @@
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ public class GameTest {
     public void testDetermineRoundWinnerPlayerBlackjack() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Создаем блэкджек для игрока и обычную руку для дилера
         player.takeCard(new Card(Suit.HEARTS, Rank.ACE));
@@ -51,7 +51,7 @@ public class GameTest {
     public void testDetermineRoundWinnerDealerBlackjack() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Создаем обычную руку для игрока и блэкджек для дилера
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));
@@ -71,7 +71,7 @@ public class GameTest {
     public void testDetermineRoundWinnerPlayerBust() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Создаем перебор для игрока
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));
@@ -92,7 +92,7 @@ public class GameTest {
     public void testDetermineRoundWinnerDealerBust() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Создаем перебор для дилера
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));
@@ -113,7 +113,7 @@ public class GameTest {
     public void testDetermineRoundWinnerPush() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Создаем ничью (одинаковое количество очков)
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));
@@ -133,7 +133,7 @@ public class GameTest {
     public void testDetermineRoundWinnerPlayerWins() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Игрок выигрывает по очкам
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));
@@ -153,7 +153,7 @@ public class GameTest {
     public void testDetermineRoundWinnerDealerWins() {
         Player player = new Player("Test", hand -> false);
         Dealer dealer = new Dealer();
-        Game game = new Game(1, player, dealer);
+        final Game game = new Game(1, player, dealer);
 
         // Дилер выигрывает по очкам
         player.takeCard(new Card(Suit.HEARTS, Rank.KING));

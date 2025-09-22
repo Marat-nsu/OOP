@@ -52,8 +52,8 @@ public class GameUI {
         displayHands(false);
 
         // Проверка на блэкджек
-        if (game.getPlayer().getHand().isBlackjack() ||
-                game.getDealer().getHand().isBlackjack()) {
+        if (game.getPlayer().getHand().isBlackjack()
+            || game.getDealer().getHand().isBlackjack()) {
             System.out.println("Обнаружен блэкджек!");
             game.determineRoundWinner();
             displayRoundResult();
@@ -120,16 +120,16 @@ public class GameUI {
     }
 
     private void displayHands(boolean showDealerHand) {
-        System.out.println("Ваши карты: [" + game.getPlayer().getHand() + "] > " +
-                game.getPlayer().getHand().calculateScore());
+        System.out.println("Ваши карты: [" + game.getPlayer().getHand() + "] > "
+            + game.getPlayer().getHand().calculateScore());
 
         if (showDealerHand) {
-            System.out.println("Карты дилера: [" + game.getDealer().getHand() + "] > " +
-                game.getDealer().getHand().calculateScore());
+            System.out.println("Карты дилера: [" + game.getDealer().getHand() + "] > "
+                + game.getDealer().getHand().calculateScore());
         } else {
             // Показываем только первую карту дилера
-            System.out.println("Карты дилера: [" + game.getDealer().getHand().getCards().get(0) +
-                ", <закрытая карта>]");
+            System.out.println("Карты дилера: [" + game.getDealer().getHand().getCards().get(0)
+                + ", <закрытая карта>]");
         }
     }
 
@@ -151,8 +151,8 @@ public class GameUI {
 
     private void displayFinalResults() {
         System.out.println("\nИгра завершена!");
-        System.out.println("Финальный счет: Игрок " + game.getPlayerScore() +
-                " : " + game.getDealerScore() + " Дилер");
+        System.out.println("Финальный счет: Игрок " + game.getPlayerScore()
+            + " : " + game.getDealerScore() + " Дилер");
     }
 
     public void close() {
