@@ -1,9 +1,15 @@
 import java.util.Scanner;
 
+/**
+ * Класс GameUI представляет пользовательский интерфейс для игры Блэкджек.
+ */
 public class GameUI {
     private Game game;
     private Scanner scanner;
 
+    /**
+    *  Конструктор GameUI, при создании выводит начальную информацию о игре.
+    */
     public GameUI() {
         scanner = new Scanner(System.in);
         System.out.print("Введите количество колод (1-8): ");
@@ -14,6 +20,14 @@ public class GameUI {
         game = new Game(decksCount, player, dealer);
     }
 
+    /**
+     * Метод для запуска игры. Он выводит начальную информацию
+     * о игре, а затем запускает цикл игры, в котором игрок
+     * может выбрать, хочет ли он сыграть еще раунд или нет.
+     * Если игрок хочет сыграть еще раунд, то метод playRound()
+     * будет вызван. В противном случае, метод displayFinalResults()
+     * будет вызван для вывода результатов игры.
+     */
     public void startGame() {
         System.out.println("Добро пожаловать в Блэкджек!");
 

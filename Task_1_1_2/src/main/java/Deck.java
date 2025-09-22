@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Класс для колоды кард, которая содержит все карты в игре.
+ */
 public class Deck {
     private List<Card> cards;
     private int decksCount;
@@ -27,6 +30,10 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
+    /**
+     * Метод для извлечения карты из колоды, если карты кончились, то пересоздаем колоду.
+     * Возвращает извлеченную карту.
+     */
     public Card drawCard() {
         if (cards.isEmpty()) {
             initialize(); // Пересоздаем колоду если закончились карты

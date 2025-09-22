@@ -1,3 +1,7 @@
+/**
+ * Класс Card, который представляет карту в игре.
+ * Он содержит информацию о масти и ранге карты.
+ */
 public class Card {
     private final Suit suit;
     private final Rank rank;

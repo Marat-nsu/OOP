@@ -1,3 +1,6 @@
+/**
+ * Enum, с мастями карт.
+ */
 public enum Suit {
     HEARTS("Червы"),
     DIAMONDS("Бубны"),

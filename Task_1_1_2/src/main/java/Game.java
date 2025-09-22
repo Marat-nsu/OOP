@@ -1,3 +1,6 @@
+/**
+ * Класс Game, содержит в себе методы для управления игрой, также хранит в себе состояние игры.
+ */
 public class Game {
     private Deck deck;
     private Player player;
@@ -6,6 +9,13 @@ public class Game {
     private int dealerScore;
     private int roundNumber;
 
+    /**
+     * Конструктор класса Game.
+     *
+     * @param decksCount Количество колод в игре.
+     * @param player Игрок.
+     * @param dealer Дилер.
+     */
     public Game(int decksCount, Player player, Dealer dealer) {
         this.deck = new Deck(decksCount);
         this.player = player;
@@ -15,6 +25,10 @@ public class Game {
         this.roundNumber = 1;
     }
 
+    /**
+     * Метод для начала нового раунда.
+     * Очищает руки игрока и дилера, а затем раздает по две карты каждому.
+     */
     public void startNewRound() {
         player.clearHand();
         dealer.clearHand();
@@ -26,6 +40,13 @@ public class Game {
         dealer.takeCard(deck.drawCard());
     }
 
+    /**
+     * Определяет победителя в текущем раунде.
+     * Сравнивает счета игрока и дилера в зависимости от результатов сравнения их рук.
+     * Если один из игроков имеет блэкджек, то другой игрок автоматически выигрывает.
+     * Если оба руки имеют одинаковое количество очков, то счет не меняется.
+     * После определения победителя раунда, счет раунда увеличивается на 1.
+     */
     public void determineRoundWinner() {
         int playerHandValue = player.getHand().calculateScore();
         int dealerHandValue = dealer.getHand().calculateScore();

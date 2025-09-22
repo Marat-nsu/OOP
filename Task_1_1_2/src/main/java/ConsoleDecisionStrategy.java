@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+/**
+ * Стратегия выбора действий для игрока через консоль.
+ */
 public class ConsoleDecisionStrategy implements DecisionStrategy {
     private final Scanner scanner;
 
