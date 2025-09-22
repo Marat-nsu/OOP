@@ -1,16 +1,16 @@
 import java.util.Scanner;
 
 public class ConsoleDecisionStrategy implements DecisionStrategy {
-	private final Scanner scanner;
+    private final Scanner scanner;
 
-	public ConsoleDecisionStrategy(Scanner scanner) {
-		this.scanner = scanner;
-	}
+    public ConsoleDecisionStrategy(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
-	@Override
-	public boolean shouldHit(Hand hand) {
-		System.out.print("Введите \"1\", чтобы взять карту, и \"0\", чтобы остановиться: ");
-		int choice = scanner.nextInt();
-		return choice == 1;
-	}
+    @Override
+    public boolean shouldHit(Hand hand) {
+        System.out.print("Введите \"1\", чтобы взять карту, и \"0\", чтобы остановиться: ");
+        int choice = scanner.nextInt();
+        return choice == 1;
+    }
 }

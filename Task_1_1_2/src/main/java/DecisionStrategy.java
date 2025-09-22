@@ -1,3 +1,3 @@
 public interface DecisionStrategy {
-	boolean shouldHit(Hand hand);
+    boolean shouldHit(Hand hand);
 }
