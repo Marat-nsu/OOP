@@ -8,8 +8,8 @@ public class GameUI {
     private Scanner scanner;
 
     /**
-    *  Конструктор GameUI, при создании выводит начальную информацию о игре.
-    */
+     * Конструктор GameUI, при создании выводит начальную информацию о игре.
+     */
     public GameUI() {
         scanner = new Scanner(System.in);
         System.out.print("Введите количество колод (1-8): ");
@@ -53,7 +53,7 @@ public class GameUI {
 
         // Проверка на блэкджек
         if (game.getPlayer().getHand().isBlackjack()
-            || game.getDealer().getHand().isBlackjack()) {
+                || game.getDealer().getHand().isBlackjack()) {
             System.out.println("Обнаружен блэкджек!");
             game.determineRoundWinner();
             displayRoundResult();
@@ -121,15 +121,15 @@ public class GameUI {
 
     private void displayHands(boolean showDealerHand) {
         System.out.println("Ваши карты: [" + game.getPlayer().getHand() + "] > "
-            + game.getPlayer().getHand().calculateScore());
+                + game.getPlayer().getHand().calculateScore());
 
         if (showDealerHand) {
             System.out.println("Карты дилера: [" + game.getDealer().getHand() + "] > "
-                + game.getDealer().getHand().calculateScore());
+                    + game.getDealer().getHand().calculateScore());
         } else {
             // Показываем только первую карту дилера
             System.out.println("Карты дилера: [" + game.getDealer().getHand().getCards().get(0)
-                + ", <закрытая карта>]");
+                    + ", <закрытая карта>]");
         }
     }
 
@@ -152,7 +152,7 @@ public class GameUI {
     private void displayFinalResults() {
         System.out.println("\nИгра завершена!");
         System.out.println("Финальный счет: Игрок " + game.getPlayerScore()
-            + " : " + game.getDealerScore() + " Дилер");
+                + " : " + game.getDealerScore() + " Дилер");
     }
 
     public void close() {

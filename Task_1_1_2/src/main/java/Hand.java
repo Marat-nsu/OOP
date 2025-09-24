@@ -57,16 +57,4 @@ public class Hand {
     public void clear() {
         cards.clear();
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (Card card : cards) {
-            sb.append(card.toString()).append(", ");
-        }
-        if (!cards.isEmpty()) {
-            sb.setLength(sb.length() - 2); // Убираем последнюю запятую и пробел
-        }
-        return sb.toString();
-    }
 }

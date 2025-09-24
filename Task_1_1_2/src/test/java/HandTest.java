@@ -61,4 +61,17 @@ public class HandTest {
         // Должно быть 1 + 1 + 1 = 3, а не 11 + 11 + 11 = 33
         assertEquals(13, hand.calculateScore());
     }
+
+    @Test
+    public void testClearCard() {
+        Hand hand = new Hand();
+        hand.addCard(new Card(Suit.HEARTS, Rank.ACE));
+        hand.addCard(new Card(Suit.SPADES, Rank.ACE));
+        hand.addCard(new Card(Suit.DIAMONDS, Rank.ACE));
+
+        // Должно быть 1 + 1 + 1 = 3, а не 11 + 11 + 11 = 33
+        assertEquals(13, hand.calculateScore());
+        hand.clear();
+        assertEquals(0, hand.calculateScore());
+    }
 }
