@@ -9,7 +9,7 @@ public class Player {
     /**
      * Конструктор класса игрока.
      *
-     * @param name Имя игрока.
+     * @param name             Имя игрока.
      * @param decisionStrategy Стратегия решения.
      */
     public Player(String name, DecisionStrategy decisionStrategy) {
@@ -22,7 +22,6 @@ public class Player {
         return decisionStrategy.shouldHit(hand);
     }
 
-    // Остальные методы без изменений
     public void takeCard(Card card) {
         hand.addCard(card);
     }

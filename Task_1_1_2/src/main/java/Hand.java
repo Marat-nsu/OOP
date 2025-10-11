@@ -1,9 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Класс руки игрока, содержит список карт.
- */
 public class Hand {
     private List<Card> cards;
     private int score;

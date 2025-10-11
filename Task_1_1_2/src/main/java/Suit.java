@@ -1,6 +1,3 @@
-/**
- * Enum for card suits.
- */
 public enum Suit {
     HEARTS("Hearts"),
     DIAMONDS("Diamonds"),

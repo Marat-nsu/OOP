@@ -28,14 +28,13 @@ public class GameUITest {
 
     @Test
     void testStartGameAndImmediateExit() {
-        // Симулируем ввод: имя игрока, 1 колода, пас в playerTurn (0), затем выход (0)
+        // Симулируем ввод: 1 колода, пас в playerTurn (0), затем выход (0)
         // Предполагаем, что в раунде нет BJ/bust, так что playerTurn вызывается один
         // раз
         String input = "1\n0\n0\n";
         inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         System.setIn(inputStream);
 
-        // Используем русский язык для ожидаемых сообщений
         GameUI gameUI = new GameUI();
         gameUI.startGame();
         gameUI.close();

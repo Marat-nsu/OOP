@@ -2,9 +2,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Класс для тестов тузов.
- */
 public class AceTest {
 
     @Test

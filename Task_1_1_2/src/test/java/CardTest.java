@@ -2,9 +2,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Класс для тестирования класса Card.
- */
 public class CardTest {
 
     @Test

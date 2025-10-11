@@ -1,6 +1,3 @@
-/**
- * Enum for card ranks.
- */
 public enum Rank {
     TWO("Two", 2),
     THREE("Three", 3),
@@ -14,7 +11,7 @@ public enum Rank {
     JACK("Jack", 10),
     QUEEN("Queen", 10),
     KING("King", 10),
-    ACE("Ace", 11); // Base value 11, can become 1 on bust
+    ACE("Ace", 11); // Базовое значение 11, может стать 1 в некоторых случаях.
 
     private final String name;
     private final int value;

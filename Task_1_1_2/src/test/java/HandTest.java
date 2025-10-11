@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Класс для тестирования класса Hand.
- */
 public class HandTest {
 
     @Test
