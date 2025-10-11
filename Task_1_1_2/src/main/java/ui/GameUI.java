@@ -139,7 +139,8 @@ public class GameUI implements AutoCloseable {
                 game.getPlayer().getHand().score() + ")");
 
         if (showDealerHand) {
-            output.println("Dealer's hand: [" + game.getDealer().getHand() + "] (score: " +
+            output.println("Dealer's hand: [" + game.getDealer().getHand().getCards().get(0) + ", "
+                    + game.getDealer().getHand().getCards().get(1) + "] (score: " +
                     game.getDealer().getHand().score() + ")");
         } else {
             output.println("Dealer's hand: [" +
