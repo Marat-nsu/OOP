@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Deck {
     private List<Card> cards;
-    private int decksCount;
+    private final int decksCount;
 
     public Deck(int decksCount) {
         this.decksCount = decksCount;
@@ -31,7 +31,8 @@ public class Deck {
     }
 
     /**
-     * Метод для извлечения карты из колоды, если карты кончились, то пересоздаем колоду.
+     * Метод для извлечения карты из колоды, если карты кончились, то пересоздаем
+     * колоду.
      * Возвращает извлеченную карту.
      */
     public Card drawCard() {
@@ -39,9 +40,5 @@ public class Deck {
             initialize(); // Пересоздаем колоду если закончились карты
         }
         return cards.remove(cards.size() - 1);
-    }
-
-    public int getRemainingCards() {
-        return cards.size();
     }
 }

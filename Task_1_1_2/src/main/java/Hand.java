@@ -6,13 +6,16 @@ import java.util.List;
  */
 public class Hand {
     private List<Card> cards;
+    private int score;
 
     public Hand() {
         cards = new ArrayList<>();
+        score = 0;
     }
 
     public void addCard(Card card) {
         cards.add(card);
+        score = calculateScore();
     }
 
     public List<Card> getCards() {
@@ -26,7 +29,7 @@ public class Hand {
      *
      * @return общий счет руки
      */
-    public int calculateScore() {
+    private int calculateScore() {
         int score = 0;
         int acesCount = 0;
 
@@ -56,5 +59,10 @@ public class Hand {
 
     public void clear() {
         cards.clear();
+        score = 0;
+    }
+
+    public int score() {
+        return score;
     }
 }

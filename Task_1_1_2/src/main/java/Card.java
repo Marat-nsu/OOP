@@ -25,6 +25,6 @@ public class Card {
 
     @Override
     public String toString() {
-        return rank.getRussianName() + " " + suit.getRussianName() + " (" + getValue() + ")";
+        return rank.getName() + " " + suit.getName() + " (" + getValue() + ")";
     }
 }

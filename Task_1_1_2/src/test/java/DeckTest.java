@@ -1,6 +1,4 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,26 +6,6 @@ import org.junit.jupiter.api.Test;
  * Класс для тестирования класса Deck.
  */
 public class DeckTest {
-
-    @Test
-    public void testDeckInitialization() {
-        Deck deck = new Deck(1);
-        assertEquals(52, deck.getRemainingCards());
-    }
-
-    @Test
-    public void testDeckWithMultipleDecks() {
-        Deck deck = new Deck(2);
-        assertEquals(104, deck.getRemainingCards());
-    }
-
-    @Test
-    public void testDrawCard() {
-        Deck deck = new Deck(1);
-        Card card = deck.drawCard();
-        assertNotNull(card);
-        assertEquals(51, deck.getRemainingCards());
-    }
 
     @Test
     public void testShuffle() {

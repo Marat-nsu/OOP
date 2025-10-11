@@ -1,42 +1,45 @@
-import java.util.Scanner;
+public class GameUI implements AutoCloseable {
+    private final Game game;
+    private final InputHandler input;
+    private final OutputHandler output;
 
-/**
- * Класс GameUI представляет пользовательский интерфейс для игры Блэкджек.
- */
-public class GameUI {
-    private Game game;
-    private Scanner scanner;
-
-    /**
-     * Конструктор GameUI, при создании выводит начальную информацию о игре.
-     */
     public GameUI() {
-        scanner = new Scanner(System.in);
-        System.out.print("Введите количество колод (1-8): ");
-        int decksCount = scanner.nextInt();
+        this.input = new InputHandler();
+        this.output = new OutputHandler();
 
-        Player player = new Player("Игрок", new ConsoleDecisionStrategy(scanner));
+        output.println("Enter number of decks (1-8): ");
+        int decksCount;
+        while (true) {
+            try {
+                decksCount = input.readInt(1, 8);
+                break;
+            } catch (IllegalArgumentException e) {
+                output.println("Invalid number. Please enter 1-8.");
+            }
+        }
+
+        Player player = new Player("Player", new ConsoleDecisionStrategy(input, output));
         Dealer dealer = new Dealer();
         game = new Game(decksCount, player, dealer);
     }
 
-    /**
-     * Метод для запуска игры. Он выводит начальную информацию
-     * о игре, а затем запускает цикл игры, в котором игрок
-     * может выбрать, хочет ли он сыграть еще раунд или нет.
-     * Если игрок хочет сыграть еще раунд, то метод playRound()
-     * будет вызван. В противном случае, метод displayFinalResults()
-     * будет вызван для вывода результатов игры.
-     */
     public void startGame() {
-        System.out.println("Добро пожаловать в Блэкджек!");
+        output.println("Welcome to Blackjack!\n");
 
         while (true) {
-            System.out.println("\nРаунд " + game.getRoundNumber());
+            output.println("Round " + game.getRoundNumber());
             playRound();
 
-            System.out.print("Хотите сыграть еще раунд? (1 - да, 0 - нет): ");
-            int choice = scanner.nextInt();
+            output.println("Play another round? (1=Yes, 0=No): ");
+            int choice;
+            while (true) {
+                try {
+                    choice = input.readInt(0, 1);
+                    break;
+                } catch (IllegalArgumentException e) {
+                    output.println("Invalid choice. Enter 0 or 1.");
+                }
+            }
             if (choice == 0) {
                 break;
             }
@@ -48,22 +51,19 @@ public class GameUI {
     private void playRound() {
         game.startNewRound();
 
-        System.out.println("Дилер раздал карты");
+        output.println("Dealer deals cards");
         displayHands(false);
 
-        // Проверка на блэкджек
         if (game.getPlayer().getHand().isBlackjack()
                 || game.getDealer().getHand().isBlackjack()) {
-            System.out.println("Обнаружен блэкджек!");
+            output.println("Blackjack!");
             game.determineRoundWinner();
             displayRoundResult();
             return;
         }
 
-        // Ход игрока
         playerTurn();
 
-        // Ход дилера, если игрок не проиграл
         if (!game.getPlayer().getHand().isBust()) {
             dealerTurn();
         }
@@ -73,21 +73,29 @@ public class GameUI {
     }
 
     private void playerTurn() {
-        System.out.println("\nВаш ход");
-        System.out.println("-------");
+        output.println("\nYour turn");
+        output.println("---");
 
         while (true) {
-            System.out.print("Введите \"1\", чтобы взять карту, и \"0\", чтобы остановиться: ");
-            int choice = scanner.nextInt();
+            output.println("Hit or stand? (1=Hit, 0=Stand): ");
+            int choice;
+            while (true) {
+                try {
+                    choice = input.readInt(0, 1);
+                    break;
+                } catch (IllegalArgumentException e) {
+                    output.println("Invalid input. Enter 0 or 1.");
+                }
+            }
 
             if (choice == 1) {
                 Card drawnCard = game.getDeck().drawCard();
                 game.getPlayer().takeCard(drawnCard);
-                System.out.println("Вы открыли карту " + drawnCard);
+                output.println("You drew: " + drawnCard);
                 displayHands(false);
 
                 if (game.getPlayer().getHand().isBust()) {
-                    System.out.println("Перебор! Сумма ваших карт превысила 21.");
+                    output.println("Bust!");
                     break;
                 }
             } else if (choice == 0) {
@@ -97,65 +105,72 @@ public class GameUI {
     }
 
     private void dealerTurn() {
-        System.out.println("\nХод дилера");
-        System.out.println("-------");
+        output.println("\nDealer's turn");
+        output.println("---");
 
-        // Дилер открывает закрытую карту
         Card hiddenCard = game.getDealer().getHand().getCards().get(1);
-        System.out.println("Дилер открывает закрытую карту " + hiddenCard);
+        output.println("Dealer reveals hidden card: " + hiddenCard);
         displayHands(true);
 
-        // Дилер берет карты по правилам
         while (game.getDealer().wantsToHit()) {
             Card drawnCard = game.getDeck().drawCard();
-            System.out.println("Дилер открывает карту " + drawnCard);
+            output.println("Dealer draws: " + drawnCard);
             game.getDealer().takeCard(drawnCard);
             displayHands(true);
 
             if (game.getDealer().getHand().isBust()) {
-                System.out.println("У дилера перебор!");
+                output.println("Dealer busts!");
                 break;
             }
         }
     }
 
     private void displayHands(boolean showDealerHand) {
-        System.out.println("Ваши карты: [" + game.getPlayer().getHand() + "] > "
-                + game.getPlayer().getHand().calculateScore());
+        output.println("Player's hand: [" + game.getPlayer().getHand().getCards().get(0) + ", " +
+                game.getPlayer().getHand().getCards().get(1) + "] (score: " +
+                game.getPlayer().getHand().score() + ")");
 
         if (showDealerHand) {
-            System.out.println("Карты дилера: [" + game.getDealer().getHand() + "] > "
-                    + game.getDealer().getHand().calculateScore());
+            output.println("Dealer's hand: [" + game.getDealer().getHand() + "] (score: " +
+                    game.getDealer().getHand().score() + ")");
         } else {
-            // Показываем только первую карту дилера
-            System.out.println("Карты дилера: [" + game.getDealer().getHand().getCards().get(0)
-                    + ", <закрытая карта>]");
+            output.println("Dealer's hand: [" +
+                    game.getDealer().getHand().getCards().get(0)
+                    + ", <Hidden card>]");
         }
     }
 
     private void displayRoundResult() {
-        int playerScore = game.getPlayerScore();
-        int dealerScore = game.getDealerScore();
+        int playerHand = game.getPlayer().getHand().score();
+        int dealerHand = game.getDealer().getHand().score();
 
-        System.out.println("\nРезультат раунда:");
-        System.out.println("Счет: Игрок " + playerScore + " : " + dealerScore + " Дилер");
+        output.println("\nRound result:");
+        output.println("Player hand: " + playerHand + ", Dealer hand: " + dealerHand);
 
-        if (playerScore > dealerScore) {
-            System.out.println("Вы выиграли раунд!");
-        } else if (playerScore < dealerScore) {
-            System.out.println("Дилер выиграл раунд.");
+        String winnerMessage;
+        if (game.getPlayer().getHand().isBust()) {
+            winnerMessage = "Dealer wins!";
+        } else if (game.getDealer().getHand().isBust()) {
+            winnerMessage = "Player wins!";
         } else {
-            System.out.println("Ничья в раунде.");
+            switch (Integer.compare(playerHand, dealerHand)) {
+                case 1 -> winnerMessage = "Player wins!";
+                case -1 -> winnerMessage = "Dealer wins!";
+                default -> winnerMessage = "Draw!";
+            }
         }
+        output.println(winnerMessage);
+
+        output.println("Current score: Player " + game.getPlayerScore() + " - Dealer " + game.getDealerScore());
     }
 
     private void displayFinalResults() {
-        System.out.println("\nИгра завершена!");
-        System.out.println("Финальный счет: Игрок " + game.getPlayerScore()
-                + " : " + game.getDealerScore() + " Дилер");
+        output.println("Game over!");
+        output.println("Final score: Player " + game.getPlayerScore() + " - Dealer " + game.getDealerScore());
     }
 
+    @Override
     public void close() {
-        scanner.close();
+        input.close();
     }
 }

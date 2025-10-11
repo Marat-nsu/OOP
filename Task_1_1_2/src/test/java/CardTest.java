@@ -18,6 +18,6 @@ public class CardTest {
     @Test
     public void testCardToString() {
         Card card = new Card(Suit.SPADES, Rank.QUEEN);
-        assertEquals("Дама Пики (10)", card.toString());
+        assertEquals("Queen Spades (10)", card.toString());
     }
 }

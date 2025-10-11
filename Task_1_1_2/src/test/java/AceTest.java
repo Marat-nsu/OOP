@@ -15,7 +15,7 @@ public class AceTest {
         hand.addCard(new Card(Suit.DIAMONDS, Rank.ACE));
 
         // Должно быть 1 + 1 + 1 = 3, а не 11 + 11 + 11 = 33
-        assertEquals(13, hand.calculateScore());
+        assertEquals(13, hand.score());
     }
 
     @Test
@@ -26,6 +26,6 @@ public class AceTest {
         hand.addCard(new Card(Suit.DIAMONDS, Rank.FIVE));
 
         // Должно быть 1 + 10 + 5 = 16, а не 11 + 10 + 5 = 26
-        assertEquals(16, hand.calculateScore());
+        assertEquals(16, hand.score());
     }
 }

@@ -28,19 +28,22 @@ public class GameUITest {
 
     @Test
     void testStartGameAndImmediateExit() {
-        // Симулируем ввод: 1 колода, затем выход (0)
+        // Симулируем ввод: имя игрока, 1 колода, пас в playerTurn (0), затем выход (0)
+        // Предполагаем, что в раунде нет BJ/bust, так что playerTurn вызывается один
+        // раз
         String input = "1\n0\n0\n";
         inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         System.setIn(inputStream);
 
+        // Используем русский язык для ожидаемых сообщений
         GameUI gameUI = new GameUI();
         gameUI.startGame();
         gameUI.close();
 
-        String output = outputStream.toString();
-        assertTrue(output.contains("Добро пожаловать в Блэкджек!"),
+        String output = outputStream.toString(StandardCharsets.UTF_8);
+        assertTrue(output.contains("Welcome to Blackjack!"),
                 "Должно быть приветственное сообщение");
-        assertTrue(output.contains("Раунд 1"), "Должен отобразиться номер раунда");
-        assertTrue(output.contains("Игра завершена!"), "Должно быть сообщение о завершении");
+        assertTrue(output.contains("Round 1"), "Должен отобразиться номер раунда");
+        assertTrue(output.contains("Game over!"), "Должно быть сообщение о завершении");
     }
 }

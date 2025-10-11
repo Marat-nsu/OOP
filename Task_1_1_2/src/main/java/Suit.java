@@ -1,19 +1,19 @@
 /**
- * Enum, с мастями карт.
+ * Enum for card suits.
  */
 public enum Suit {
-    HEARTS("Червы"),
-    DIAMONDS("Бубны"),
-    CLUBS("Трефы"),
-    SPADES("Пики");
+    HEARTS("Hearts"),
+    DIAMONDS("Diamonds"),
+    CLUBS("Clubs"),
+    SPADES("Spades");
 
-    private final String russianName;
+    private final String name;
 
-    Suit(String russianName) {
-        this.russianName = russianName;
+    Suit(String name) {
+        this.name = name;
     }
 
-    public String getRussianName() {
-        return russianName;
+    public String getName() {
+        return name;
     }
 }
