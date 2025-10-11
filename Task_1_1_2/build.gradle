@@ -22,7 +22,7 @@ test {
 }
 
 application {
-    mainClass = 'Main'
+    mainClass = 'core.Main'
 }
 
 jacocoTestReport {
