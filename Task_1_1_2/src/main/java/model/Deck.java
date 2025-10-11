@@ -22,10 +22,6 @@ public class Deck {
                 }
             }
         }
-        shuffle();
-    }
-
-    public void shuffle() {
         Collections.shuffle(cards);
     }
 
