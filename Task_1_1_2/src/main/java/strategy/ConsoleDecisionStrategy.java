@@ -1,3 +1,9 @@
+package strategy;
+
+import model.Hand;
+import ui.InputHandler;
+import ui.OutputHandler;
+
 /**
  * Стратегия выбора действий для игрока через консоль.
  */

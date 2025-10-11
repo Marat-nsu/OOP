@@ -1,3 +1,7 @@
+package strategy;
+
+import model.Hand;
+
 /**
  * Вспомогательный класс для тестирования DecisionStrategy.
  */

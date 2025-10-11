@@ -1,3 +1,5 @@
+package model;
+
 public class Card {
     private final Suit suit;
     private final Rank rank;

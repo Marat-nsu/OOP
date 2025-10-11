@@ -1,3 +1,5 @@
+package ui;
+
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -23,7 +25,6 @@ public class InputHandler implements AutoCloseable {
             throw new IllegalArgumentException("No input available", e);
         }
     }
-
 
     public int readInt() {
         return readInt(Integer.MIN_VALUE, Integer.MAX_VALUE);

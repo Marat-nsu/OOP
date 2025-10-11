@@ -1,3 +1,7 @@
+package model;
+
+import strategy.DecisionStrategy;
+
 /**
  * Класс игрока, содержит руку и стратегию решения.
  */

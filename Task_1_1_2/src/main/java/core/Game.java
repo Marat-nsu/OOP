@@ -1,3 +1,9 @@
+package core;
+
+import model.Dealer;
+import model.Deck;
+import model.Player;
+
 public class Game {
     private final Deck deck;
     private final Player player;

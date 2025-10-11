@@ -1,3 +1,11 @@
+package ui;
+
+import core.Game;
+import model.Card;
+import model.Dealer;
+import model.Player;
+import strategy.ConsoleDecisionStrategy;
+
 public class GameUI implements AutoCloseable {
     private final Game game;
     private final InputHandler input;

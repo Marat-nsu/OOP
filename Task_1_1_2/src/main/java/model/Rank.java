@@ -1,3 +1,5 @@
+package model;
+
 public enum Rank {
     TWO("Two", 2),
     THREE("Three", 3),

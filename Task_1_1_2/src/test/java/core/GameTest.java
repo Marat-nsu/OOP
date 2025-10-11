@@ -1,5 +1,12 @@
+package core;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import model.Card;
+import model.Dealer;
+import model.Player;
+import model.Rank;
+import model.Suit;
 import org.junit.jupiter.api.Test;
 
 public class GameTest {
