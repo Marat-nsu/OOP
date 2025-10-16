@@ -27,10 +27,6 @@
   "scoreSeparator": " - Dealer ",
   "gameOver": "Game over!",
   "finalScorePrefix": "Final score: Player ",
-  "handFormat": "[%s, %s] (score: %d)",
-  "multiHandFormat": "[%s, %s, %s] (score: %d)",
-  "hiddenHandFormat": "[%s, <Hidden card>]",
-  "cardSeparator": ", ",
   "scorePrefix": "Score ",
   "hiddenCard": "<Hidden card>",
 

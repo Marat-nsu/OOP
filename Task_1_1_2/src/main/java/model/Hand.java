@@ -85,17 +85,17 @@ public class Hand {
             for (int i = 1; i < cards.size(); i++) {
                 if (cards.get(i).getRank() == Rank.ACE) {
                     int effectiveValue = softAcesCount > aceIndex ? 1 : 11;
-                    handStr.append(loc.get("cardSeparator"))
+                    handStr.append(", ")
                             .append(cards.get(i).toString().replace("(11)",
                                     "(%d)".formatted(effectiveValue)));
                     aceIndex++;
                 } else {
-                    handStr.append(loc.get("cardSeparator")).append(cards.get(i).toString(loc));
+                    handStr.append(", ").append(cards.get(i).toString(loc));
                 }
             }
         } else {
             if (cards.size() > 1) {
-                handStr.append(loc.get("cardSeparator")).append(loc.get("hiddenCard"));
+                handStr.append(", ").append(loc.get("hiddenCard"));
             }
         }
         handStr.append(']');
