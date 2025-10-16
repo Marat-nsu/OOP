@@ -37,7 +37,7 @@ public class GameUITest {
         inputStream = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
         System.setIn(inputStream);
 
-        GameUI gameUI = new GameUI();
+        GameUI gameUI = new GameUI("en");
         gameUI.startGame();
         gameUI.close();
 

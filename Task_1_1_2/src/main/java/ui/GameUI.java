@@ -10,42 +10,44 @@ public class GameUI implements AutoCloseable {
     private final Game game;
     private final InputHandler input;
     private final OutputHandler output;
+    private final LocalizationLoader localization;
 
-    public GameUI() {
+    public GameUI(String language) {
         this.input = new InputHandler();
         this.output = new OutputHandler();
+        this.localization = new LocalizationLoader(language != null ? language : "en");
 
-        output.println("Enter number of decks (1-8): ");
+        output.println(localization.get("enterDecks"));
         int decksCount;
         while (true) {
             try {
                 decksCount = input.readInt(1, 8);
                 break;
             } catch (IllegalArgumentException e) {
-                output.println("Invalid number. Please enter 1-8.");
+                output.println(localization.get("invalidDecks"));
             }
         }
 
-        Player player = new Player("Player", new ConsoleDecisionStrategy(input, output));
+        Player player = new Player("Player", new ConsoleDecisionStrategy(input));
         Dealer dealer = new Dealer();
         game = new Game(decksCount, player, dealer);
     }
 
     public void startGame() {
-        output.println("Welcome to Blackjack!\n");
+        output.println(localization.get("welcomeMessage"));
 
         while (true) {
-            output.println("Round " + game.getRoundNumber());
+            output.println(localization.get("roundPrefix", game.getRoundNumber()));
             playRound();
 
-            output.println("Play another round? (1=Yes, 0=No): ");
+            output.println(localization.get("playAnotherRound"));
             int choice;
             while (true) {
                 try {
                     choice = input.readInt(0, 1);
                     break;
                 } catch (IllegalArgumentException e) {
-                    output.println("Invalid choice. Enter 0 or 1.");
+                    output.println(localization.get("invalidChoice"));
                 }
             }
             if (choice == 0) {
@@ -59,12 +61,12 @@ public class GameUI implements AutoCloseable {
     private void playRound() {
         game.startNewRound();
 
-        output.println("Dealer deals cards");
+        output.println(localization.get("dealerDealsCards"));
         displayHands(false);
 
         if (game.getPlayer().getHand().isBlackjack()
                 || game.getDealer().getHand().isBlackjack()) {
-            output.println("Blackjack!");
+            output.println(localization.get("blackjack"));
             game.determineRoundWinner();
             displayRoundResult();
             return;
@@ -81,29 +83,29 @@ public class GameUI implements AutoCloseable {
     }
 
     private void playerTurn() {
-        output.println("\nYour turn");
-        output.println("---");
+        output.println(localization.get("yourTurn"));
+        output.println(localization.get("separator"));
 
         while (true) {
-            output.println("Hit or stand? (1=Hit, 0=Stand): ");
+            output.println(localization.get("hitOrStand"));
             int choice;
             while (true) {
                 try {
                     choice = input.readInt(0, 1);
                     break;
                 } catch (IllegalArgumentException e) {
-                    output.println("Invalid input. Enter 0 or 1.");
+                    output.println(localization.get("invalidInput"));
                 }
             }
 
             if (choice == 1) {
                 Card drawnCard = game.getDeck().drawCard();
                 game.getPlayer().takeCard(drawnCard);
-                output.println("You drew: " + drawnCard);
+                output.println(localization.get("youDrew") + drawnCard);
                 displayHands(false);
 
                 if (game.getPlayer().getHand().isBust()) {
-                    output.println("Bust!");
+                    output.println(localization.get("bust"));
                     break;
                 }
             } else if (choice == 0) {
@@ -113,69 +115,61 @@ public class GameUI implements AutoCloseable {
     }
 
     private void dealerTurn() {
-        output.println("\nDealer's turn");
-        output.println("---");
+        output.println(localization.get("dealersTurn"));
+        output.println(localization.get("separator"));
 
         Card hiddenCard = game.getDealer().getHand().getCards().get(1);
-        output.println("Dealer reveals hidden card: " + hiddenCard);
+        output.println(localization.get("dealerRevealsHidden") + hiddenCard);
         displayHands(true);
 
         while (game.getDealer().wantsToHit()) {
             Card drawnCard = game.getDeck().drawCard();
-            output.println("Dealer draws: " + drawnCard);
+            output.println(localization.get("dealerDraws") + drawnCard);
             game.getDealer().takeCard(drawnCard);
             displayHands(true);
 
             if (game.getDealer().getHand().isBust()) {
-                output.println("Dealer busts!");
+                output.println(localization.get("dealerBusts"));
                 break;
             }
         }
     }
 
     private void displayHands(boolean showDealerHand) {
-        output.println("Player's hand: [" + game.getPlayer().getHand().getCards().get(0) + ", " +
-                game.getPlayer().getHand().getCards().get(1) + "] (score: " +
-                game.getPlayer().getHand().score() + ")");
-
-        if (showDealerHand) {
-            output.println("Dealer's hand: [" + game.getDealer().getHand().getCards().get(0) + ", "
-                    + game.getDealer().getHand().getCards().get(1) + "] (score: " +
-                    game.getDealer().getHand().score() + ")");
-        } else {
-            output.println("Dealer's hand: [" +
-                    game.getDealer().getHand().getCards().get(0)
-                    + ", <Hidden card>]");
-        }
+        output.println(game.getPlayer().getHand().formatForDisplay(true, localization));
+        output.println(game.getDealer().getHand().formatForDisplay(showDealerHand, localization));
     }
 
     private void displayRoundResult() {
         int playerHand = game.getPlayer().getHand().score();
         int dealerHand = game.getDealer().getHand().score();
 
-        output.println("\nRound result:");
-        output.println("Player hand: " + playerHand + ", Dealer hand: " + dealerHand);
+        output.println(localization.get("roundResultPrefix"));
+        output.println(localization.get("playerHandPrefix") + playerHand
+                + localization.get("dealerHandSuffix") + dealerHand);
 
         String winnerMessage;
         if (game.getPlayer().getHand().isBust()) {
-            winnerMessage = "Dealer wins!";
+            winnerMessage = localization.get("dealerWins");
         } else if (game.getDealer().getHand().isBust()) {
-            winnerMessage = "Player wins!";
+            winnerMessage = localization.get("playerWins");
         } else {
             switch (Integer.compare(playerHand, dealerHand)) {
-                case 1 -> winnerMessage = "Player wins!";
-                case -1 -> winnerMessage = "Dealer wins!";
-                default -> winnerMessage = "Draw!";
+                case 1 -> winnerMessage = localization.get("playerWins");
+                case -1 -> winnerMessage = localization.get("dealerWins");
+                default -> winnerMessage = localization.get("draw");
             }
         }
         output.println(winnerMessage);
 
-        output.println("Current score: Player " + game.getPlayerScore() + " - Dealer " + game.getDealerScore());
+        output.println(localization.get("currentScorePrefix") + game.getPlayerScore()
+                + localization.get("scoreSeparator") + game.getDealerScore());
     }
 
     private void displayFinalResults() {
-        output.println("Game over!");
-        output.println("Final score: Player " + game.getPlayerScore() + " - Dealer " + game.getDealerScore());
+        output.println(localization.get("gameOver"));
+        output.println(localization.get("finalScorePrefix") + game.getPlayerScore()
+                + localization.get("scoreSeparator") + game.getDealerScore());
     }
 
     @Override

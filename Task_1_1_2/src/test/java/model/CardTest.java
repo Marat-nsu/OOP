@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import ui.LocalizationLoader;
+
 public class CardTest {
 
     @Test
@@ -17,6 +19,7 @@ public class CardTest {
     @Test
     public void testCardToString() {
         Card card = new Card(Suit.SPADES, Rank.QUEEN);
-        assertEquals("Queen Spades (10)", card.toString());
+        LocalizationLoader loc = new LocalizationLoader("en");
+        assertEquals("Queen Spades (10)", card.toString(loc));
     }
 }

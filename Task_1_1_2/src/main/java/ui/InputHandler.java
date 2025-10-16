@@ -10,6 +10,10 @@ public class InputHandler implements AutoCloseable {
         this.scanner = new Scanner(System.in);
     }
 
+    public int readInt() {
+        return readInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
     public int readInt(int min, int max) {
         try {
             if (!scanner.hasNextInt()) {
@@ -24,15 +28,6 @@ public class InputHandler implements AutoCloseable {
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("No input available", e);
         }
-    }
-
-    public int readInt() {
-        return readInt(Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    public String readString() {
-        scanner.nextLine();
-        return scanner.nextLine();
     }
 
     @Override

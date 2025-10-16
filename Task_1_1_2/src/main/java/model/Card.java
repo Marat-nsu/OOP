@@ -1,5 +1,7 @@
 package model;
 
+import ui.LocalizationLoader;
+
 public class Card {
     private final Suit suit;
     private final Rank rank;
@@ -21,8 +23,9 @@ public class Card {
         return rank.getValue();
     }
 
-    @Override
-    public String toString() {
-        return rank.getName() + " " + suit.getName() + " (" + getValue() + ")";
+    public String toString(LocalizationLoader loc) {
+        String rankName = loc.get("rank." + rank.name().toLowerCase());
+        String suitName = loc.get("suit." + suit.name().toLowerCase());
+        return rankName + " " + suitName + " (" + getValue() + ")";
     }
 }

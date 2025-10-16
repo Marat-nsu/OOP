@@ -13,6 +13,13 @@ public class Deck {
         initialize();
     }
 
+    public Card drawCard() {
+        if (cards.isEmpty()) {
+            initialize(); // Пересоздаем колоду если закончились карты
+        }
+        return cards.remove(cards.size() - 1);
+    }
+
     private void initialize() {
         cards = new ArrayList<>();
         for (int i = 0; i < decksCount; i++) {
@@ -23,12 +30,5 @@ public class Deck {
             }
         }
         Collections.shuffle(cards);
-    }
-
-    public Card drawCard() {
-        if (cards.isEmpty()) {
-            initialize(); // Пересоздаем колоду если закончились карты
-        }
-        return cards.remove(cards.size() - 1);
     }
 }
