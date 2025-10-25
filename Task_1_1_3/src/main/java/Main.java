@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Main {
+    // Вынести
     static Map<String, Integer> parseAssignments(String assignments) {
         Map<String, Integer> vars = new HashMap<>();
         if (assignments == null || assignments.isEmpty()) {

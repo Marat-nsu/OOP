@@ -6,4 +6,6 @@ abstract class Expression {
     abstract int eval(String assignments);
 
     public abstract String toString();
+
+    // Сделать отдельный метод для парсинга assignments который будет считаться один раз
 }

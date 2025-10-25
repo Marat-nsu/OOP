@@ -1,9 +1,9 @@
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class ExpressionTest {
 
@@ -11,10 +11,10 @@ class ExpressionTest {
     private String captureOutput(Runnable task) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
-        PrintStream old = System.out;
         System.setOut(ps);
         task.run();
         System.out.flush();
+        PrintStream old = System.out;
         System.setOut(old);
         return baos.toString().trim();
     }

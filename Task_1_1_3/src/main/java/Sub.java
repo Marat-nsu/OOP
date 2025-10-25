@@ -1,5 +1,6 @@
 class Sub extends Expression {
-    private Expression left, right;
+    private Expression left;
+    private Expression right;
 
     public Sub(Expression left, Expression right) {
         this.left = left;

@@ -1,5 +1,6 @@
 class Mul extends Expression {
-    private Expression left, right;
+    private Expression left;
+    private Expression right;
 
     public Mul(Expression left, Expression right) {
         this.left = left;

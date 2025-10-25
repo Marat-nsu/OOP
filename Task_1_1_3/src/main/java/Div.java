@@ -1,5 +1,6 @@
 class Div extends Expression {
-    private Expression left, right;
+    private Expression left;
+    private Expression right;
 
     public Div(Expression left, Expression right) {
         this.left = left;
@@ -25,7 +26,10 @@ class Div extends Expression {
     @Override
     int eval(String assignments) {
         int denominator = right.eval(assignments);
-        if (denominator == 0) throw new ArithmeticException("Division by zero");
+        // Иерархия исключений
+        if (denominator == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
         return left.eval(assignments) / denominator;
     }
 
