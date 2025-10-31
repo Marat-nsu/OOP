@@ -1,26 +1,25 @@
-class Number extends Expression {
+import java.util.Map;
+
+public class Number extends Expression {
     private int value;
 
     public Number(int value) {
         this.value = value;
     }
 
-    @Override
-    void print() {
-        System.out.print(value);
-    }
-
-    @Override
-    Expression derivative(String var) {
+    public Expression derivative(String var) {
         return new Number(0);
     }
 
-    @Override
-    int eval(String assignments) {
+    public int eval(Map<String, Integer> vars) {
         return value;
     }
 
-    @Override
+    public void print() {
+        final String s = toString();
+        System.out.print(s);
+    }
+
     public String toString() {
         return String.valueOf(value);
     }

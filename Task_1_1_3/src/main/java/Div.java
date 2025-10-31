@@ -1,4 +1,6 @@
-class Div extends Expression {
+import java.util.Map;
+
+public class Div extends Expression {
     private Expression left;
     private Expression right;
 
@@ -7,33 +9,26 @@ class Div extends Expression {
         this.right = right;
     }
 
-    @Override
-    void print() {
-        System.out.print("(");
-        left.print();
-        System.out.print("/");
-        right.print();
-        System.out.print(")");
-    }
-
-    @Override
-    Expression derivative(String var) {
+    public Expression derivative(String var) {
         return new Div(
                 new Sub(new Mul(left.derivative(var), right), new Mul(left, right.derivative(var))),
                 new Mul(right, right));
     }
 
-    @Override
-    int eval(String assignments) {
-        int denominator = right.eval(assignments);
+    public int eval(Map<String, Integer> vars) {
+        int denominator = right.eval(vars);
         // Иерархия исключений
         if (denominator == 0) {
             throw new ArithmeticException("Division by zero");
         }
-        return left.eval(assignments) / denominator;
+        return left.eval(vars) / denominator;
     }
 
-    @Override
+    public void print() {
+        final String s = toString();
+        System.out.print(s);
+    }
+
     public String toString() {
         return "(" + left.toString() + "/" + right.toString() + ")";
     }

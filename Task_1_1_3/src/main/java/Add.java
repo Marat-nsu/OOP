@@ -1,4 +1,6 @@
-class Add extends Expression {
+import java.util.Map;
+
+public class Add extends Expression {
     private Expression left;
     private Expression right;
 
@@ -7,23 +9,17 @@ class Add extends Expression {
         this.right = right;
     }
 
-    void print() {
-        // использовать toString
-        System.out.print("(");
-        left.print();
-        System.out.print("+");
-        right.print();
-        System.out.print(")");
-    }
-
-
-    Expression derivative(String var) {
+    public Expression derivative(String var) {
         return new Add(left.derivative(var), right.derivative(var));
     }
 
+    public int eval(Map<String, Integer> vars) {
+        return left.eval(vars) + right.eval(vars);
+    }
 
-    int eval(String assignments) {
-        return left.eval(assignments) + right.eval(assignments);
+    public void print() {
+        final String s = toString();
+        System.out.print(s);
     }
 
     public String toString() {

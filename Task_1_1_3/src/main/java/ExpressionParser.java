@@ -1,4 +1,4 @@
-class ExpressionParser {
+public class ExpressionParser {
     private String input;
     private int pos;
 
@@ -7,8 +7,7 @@ class ExpressionParser {
         this.pos = 0;
     }
 
-    // Добавить модификатор доступа
-    Expression parse() {
+    public Expression parse() {
         return parseExpression();
 
     }

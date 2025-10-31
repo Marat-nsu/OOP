@@ -1,4 +1,6 @@
-class Mul extends Expression {
+import java.util.Map;
+
+public class Mul extends Expression {
     private Expression left;
     private Expression right;
 
@@ -7,28 +9,21 @@ class Mul extends Expression {
         this.right = right;
     }
 
-    @Override
-    void print() {
-        System.out.print("(");
-        left.print();
-        System.out.print("*");
-        right.print();
-        System.out.print(")");
-    }
-
-    @Override
-    Expression derivative(String var) {
+    public Expression derivative(String var) {
         return new Add(
                     new Mul(left.derivative(var), right),
                     new Mul(left, right.derivative(var)));
     }
 
-    @Override
-    int eval(String assignments) {
-        return left.eval(assignments) * right.eval(assignments);
+    public int eval(Map<String, Integer> vars) {
+        return left.eval(vars) * right.eval(vars);
     }
 
-    @Override
+    public void print() {
+        final String s = toString();
+        System.out.print(s);
+    }
+
     public String toString() {
         return "(" + left.toString() + "*" + right.toString() + ")";
     }
