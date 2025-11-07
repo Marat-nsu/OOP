@@ -209,4 +209,41 @@ public class HashTableTest {
         assertTrue(str.contains("y=2") || str.contains("2=y"));
         assertTrue(str.contains(",") || str.length() > 5);
     }
+
+    @Test
+    void testNullKeysAndValues() {
+        HashTable<String, String> ht = new HashTable<>();
+        ht.put(null, "null-value");
+        ht.put("key", null);
+        assertEquals("null-value", ht.get(null));
+        assertNull(ht.get("key"));
+        assertTrue(ht.containsKey(null));
+        assertTrue(ht.containsKey("key"));
+        assertEquals(2, ht.size());
+    }
+
+    /**
+     * Тест конструкторов с параметрами (initialCapacity, loadFactor).
+     * Проверяем: IllegalArgumentException для invalid args.
+     */
+    @Test
+    void testConstructors() {
+        assertThrows(IllegalArgumentException.class, () -> new HashTable<>(0, 0.75f));  // Capacity <=0
+        assertThrows(IllegalArgumentException.class, () -> new HashTable<>(16, 0f));  // Load <=0
+        assertThrows(IllegalArgumentException.class, () -> new HashTable<>(16, Float.NaN));  // NaN
+
+        HashTable<String, Integer> ht = new HashTable<>(32, 0.8f);
+        assertEquals(0, ht.size());
+    }
+
+    @Test
+    void testClear() {
+        HashTable<String, Integer> ht = new HashTable<>();
+        ht.put("one", 1);
+        ht.clear();
+        assertTrue(ht.isEmpty());
+        assertEquals(0, ht.size());
+        assertNull(ht.get("one"));
+        assertFalse(ht.containsKey("one"));
+    }
 }
