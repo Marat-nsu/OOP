@@ -15,11 +15,10 @@ public class Div extends Expression {
                 new Mul(right, right));
     }
 
-    public int eval(Map<String, Integer> vars) {
+    public int eval(Map<String, Integer> vars) throws ExpressionException {
         int denominator = right.eval(vars);
-        // Иерархия исключений
         if (denominator == 0) {
-            throw new ArithmeticException("Division by zero");
+            throw new ExpressionException("Division by zero");
         }
         return left.eval(vars) / denominator;
     }

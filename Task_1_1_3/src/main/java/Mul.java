@@ -15,7 +15,7 @@ public class Mul extends Expression {
                     new Mul(left, right.derivative(var)));
     }
 
-    public int eval(Map<String, Integer> vars) {
+    public int eval(Map<String, Integer> vars) throws ExpressionException {
         return left.eval(vars) * right.eval(vars);
     }
 

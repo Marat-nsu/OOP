@@ -13,7 +13,7 @@ public class Add extends Expression {
         return new Add(left.derivative(var), right.derivative(var));
     }
 
-    public int eval(Map<String, Integer> vars) {
+    public int eval(Map<String, Integer> vars) throws ExpressionException{
         return left.eval(vars) + right.eval(vars);
     }
 

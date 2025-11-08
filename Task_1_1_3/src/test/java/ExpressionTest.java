@@ -20,7 +20,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testNumber() {
+    void testNumber() throws ExpressionException {
         Expression number = new Number(5);
         assertEquals("5", number.toString());
         assertEquals(5, number.eval("x=10"));
@@ -29,7 +29,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testVariable() {
+    void testVariable() throws ExpressionException {
         Expression var = new Variable("x");
         assertEquals("x", var.toString());
         assertEquals("x", captureOutput(var::print));
@@ -40,7 +40,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testAdd() {
+    void testAdd() throws ExpressionException {
         Expression add = new Add(new Number(3), new Variable("x"));
         assertEquals("(3+x)", add.toString());
         assertEquals("(3+x)", captureOutput(add::print));
@@ -50,7 +50,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testSub() {
+    void testSub() throws ExpressionException {
         Expression sub = new Sub(new Number(5), new Variable("x"));
         assertEquals("(5-x)", sub.toString());
         assertEquals("(5-x)", captureOutput(sub::print));
@@ -60,7 +60,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testMul() {
+    void testMul() throws ExpressionException {
         Expression mul = new Mul(new Number(2), new Variable("x"));
         assertEquals("(2*x)", mul.toString());
         assertEquals("(2*x)", captureOutput(mul::print));
@@ -71,7 +71,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testDiv() {
+    void testDiv() throws ExpressionException {
         Expression div = new Div(new Variable("x"), new Number(2));
         assertEquals("(x/2)", div.toString());
         assertEquals("(x/2)", captureOutput(div::print));
@@ -79,12 +79,12 @@ class ExpressionTest {
         Expression deriv = div.derivative("x");
         assertEquals("(((1*2)-(x*0))/(2*2))", deriv.toString());
         assertEquals(0, div.derivative("y").eval("x=10"));
-        assertThrows(ArithmeticException.class,
+        assertThrows(ExpressionException.class,
                 () -> new Div(new Number(1), new Number(0)).eval(""));
     }
 
     @Test
-    void testExpressionParser() {
+    void testExpressionParser() throws ExpressionException {
         ExpressionParser parser = new ExpressionParser("(3+(2*x))");
         Expression expr = parser.parse();
         assertEquals("(3+(2*x))", expr.toString());
@@ -102,7 +102,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testComplexExpression() {
+    void testComplexExpression() throws ExpressionException {
         Expression expr = new Add(new Number(3), new Mul(new Number(2), new Variable("x")));
         assertEquals("(3+(2*x))", expr.toString());
         assertEquals(23, expr.eval("x=10;y=13"));
@@ -111,7 +111,7 @@ class ExpressionTest {
     }
 
     @Test
-    void testParserVariableAndNumber() {
+    void testParserVariableAndNumber() throws ExpressionException {
         ExpressionParser parser = new ExpressionParser("x");
         Expression expr = parser.parse();
         assertEquals("x", expr.toString());

@@ -7,12 +7,12 @@ public class ExpressionParser {
         this.pos = 0;
     }
 
-    public Expression parse() {
+    public Expression parse() throws ExpressionException {
         return parseExpression();
 
     }
 
-    private Expression parseExpression() {
+    private Expression parseExpression() throws ExpressionException {
         if (input.charAt(pos) == '(') {
             pos++;
             Expression left = parseExpression();
@@ -31,7 +31,7 @@ public class ExpressionParser {
                 case '/':
                     return new Div(left, right);
                 default:
-                    throw new IllegalArgumentException("Unknown operator: " + op);
+                    throw new ExpressionException("Unknown operator: " + op);
             }
         } else if (Character.isDigit(input.charAt(pos))) {
             return parseNumber();
