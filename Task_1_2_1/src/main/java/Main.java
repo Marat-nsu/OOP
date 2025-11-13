@@ -3,7 +3,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         // Тест для списка смежности
-        Graph graph = new AdjacencyListGraph();
+        Graph<String> graph = new AdjacencyListGraph<>();
         try {
             graph.readFromFile("graph.txt"); // Читаем из файла
         } catch (IOException e) {

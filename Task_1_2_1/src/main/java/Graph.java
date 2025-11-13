@@ -2,20 +2,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public interface Graph {
-    void addVertex(String vertex);
+public interface Graph<T> {
+    void addVertex(T vertex);
 
-    void removeVertex(String vertex);
+    void removeVertex(T vertex);
 
-    void addEdge(String from, String to);
+    void addEdge(T from, T to);
 
-    void removeEdge(String from, String to);
+    void removeEdge(T from, T to);
 
-    List<String> getNeighbors(String vertex);
+    List<T> getNeighbors(T vertex);
 
-    Set<String> getVertices();
+    Set<T> getVertices();
 
     void readFromFile(String filePath) throws IOException;
 
-    List<String> topologicalSort();
+    List<T> topologicalSort();
 }

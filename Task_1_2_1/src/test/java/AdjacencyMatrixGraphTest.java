@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class AdjacencyMatrixGraphTest {
-    private AdjacencyMatrixGraph graph;
+    private AdjacencyMatrixGraph<String> graph;
     @TempDir
     File tempDir;
 
     @BeforeEach
     void setUp() {
-        graph = new AdjacencyMatrixGraph();
+        graph = new AdjacencyMatrixGraph<>();
     }
 
     @AfterEach
@@ -190,7 +190,7 @@ public class AdjacencyMatrixGraphTest {
 
     @Test
     void testEqualsDifferentVertices() {
-        AdjacencyMatrixGraph other = new AdjacencyMatrixGraph();
+        AdjacencyMatrixGraph<String> other = new AdjacencyMatrixGraph<>();
         graph.addVertex("A");
         other.addVertex("B");
         Assertions.assertNotEquals(graph, other);
@@ -198,7 +198,7 @@ public class AdjacencyMatrixGraphTest {
 
     @Test
     void testEqualsSameStructure() {
-        AdjacencyMatrixGraph other = new AdjacencyMatrixGraph();
+        AdjacencyMatrixGraph<String> other = new AdjacencyMatrixGraph<>();
         graph.addEdge("A", "B");
         graph.addEdge("B", "C");
         other.addEdge("A", "B");
@@ -208,7 +208,7 @@ public class AdjacencyMatrixGraphTest {
 
     @Test
     void testEqualsDifferentEdges() {
-        AdjacencyMatrixGraph other = new AdjacencyMatrixGraph();
+        AdjacencyMatrixGraph<String> other = new AdjacencyMatrixGraph<>();
         graph.addEdge("A", "B");
         other.addEdge("A", "C");
         Assertions.assertNotEquals(graph, other);

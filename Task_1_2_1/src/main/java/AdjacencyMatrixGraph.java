@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class AdjacencyMatrixGraph implements Graph {
-    private final Map<String, Integer> vertexToIndex = new HashMap<>();
-    private final List<String> indexToVertex = new ArrayList<>();
+public class AdjacencyMatrixGraph<T> implements Graph<T> {
+    private final Map<T, Integer> vertexToIndex = new HashMap<>();
+    private final List<T> indexToVertex = new ArrayList<>();
     private boolean[][] matrix;
 
     public AdjacencyMatrixGraph() {
@@ -21,7 +21,7 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public void addVertex(String vertex) {
+    public void addVertex(T vertex) {
         if (!vertexToIndex.containsKey(vertex)) {
             int newIndex = indexToVertex.size();
             vertexToIndex.put(vertex, newIndex);
@@ -39,12 +39,12 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public void removeVertex(String vertex) {
+    public void removeVertex(T vertex) {
         Integer index = vertexToIndex.remove(vertex);
         if (index != null) {
             indexToVertex.remove(index.intValue());
             boolean[][] newMatrix = new boolean[indexToVertex.size()][indexToVertex.size()];
-            Map<String, Integer> newVertexToIndex = new HashMap<>();
+            Map<T, Integer> newVertexToIndex = new HashMap<>();
             int newIndex = 0;
             for (int i = 0; i < indexToVertex.size(); i++) {
                 newVertexToIndex.put(indexToVertex.get(i), newIndex);
@@ -62,7 +62,7 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public void addEdge(String from, String to) {
+    public void addEdge(T from, T to) {
         addVertex(from);
         addVertex(to);
         int fromIndex = vertexToIndex.get(from);
@@ -71,7 +71,7 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public void removeEdge(String from, String to) {
+    public void removeEdge(T from, T to) {
         Integer fromIndex = vertexToIndex.get(from);
         Integer toIndex = vertexToIndex.get(to);
         if (fromIndex != null && toIndex != null) {
@@ -80,8 +80,8 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public List<String> getNeighbors(String vertex) {
-        List<String> neighbors = new ArrayList<>();
+    public List<T> getNeighbors(T vertex) {
+        List<T> neighbors = new ArrayList<>();
         Integer index = vertexToIndex.get(vertex);
         if (index != null) {
             for (int j = 0; j < matrix[index].length; j++) {
@@ -94,32 +94,33 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
-    public Set<String> getVertices() {
+    public Set<T> getVertices() {
         return new HashSet<>(indexToVertex);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void readFromFile(String filePath) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             int n = Integer.parseInt(br.readLine().trim());
             for (int i = 0; i < n; i++) {
                 String vertexStr = br.readLine().trim();
-                addVertex(vertexStr);
+                addVertex((T) vertexStr);
             }
             int m = Integer.parseInt(br.readLine().trim());
             for (int i = 0; i < m; i++) {
                 String[] parts = br.readLine().trim().split("\\s+");
                 if (parts.length == 2) {
-                    addEdge(parts[0], parts[1]);
+                    addEdge((T) parts[0], (T) parts[1]);
                 }
             }
         }
     }
 
     @Override
-    public List<String> topologicalSort() {
+    public List<T> topologicalSort() {
         boolean[] visited = new boolean[indexToVertex.size()];
-        List<String> order = new ArrayList<>();
+        List<T> order = new ArrayList<>();
         for (int i = 0; i < indexToVertex.size(); i++) {
             if (!visited[i]) {
                 dfsTopo(i, visited, order);
@@ -129,7 +130,7 @@ public class AdjacencyMatrixGraph implements Graph {
         return order;
     }
 
-    private void dfsTopo(int index, boolean[] visited, List<String> order) {
+    private void dfsTopo(int index, boolean[] visited, List<T> order) {
         visited[index] = true;
         for (int j = 0; j < matrix.length; j++) {
             if (matrix[index][j] && !visited[j]) {
@@ -140,6 +141,7 @@ public class AdjacencyMatrixGraph implements Graph {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -147,16 +149,16 @@ public class AdjacencyMatrixGraph implements Graph {
         if (!(o instanceof Graph)) {
             return false;
         }
-        Graph other = (Graph) o;
-        Set<String> thisVertices = getVertices();
-        Set<String> otherVertices = (Set<String>) other.getVertices();
+        Graph<T> other = (Graph<T>) o;
+        Set<T> thisVertices = getVertices();
+        Set<T> otherVertices = other.getVertices();
         if (!thisVertices.equals(otherVertices)) {
             return false;
         }
-        for (String v : thisVertices) {
-            Set<String> thisNeighborsSet = new HashSet<>(getNeighbors(v));
-            List<String> otherList = other.getNeighbors(v);
-            Set<String> otherNeighborsSet = new HashSet<>((Collection<String>) otherList);
+        for (T v : thisVertices) {
+            Set<T> thisNeighborsSet = new HashSet<>(getNeighbors(v));
+            List<T> otherList = other.getNeighbors(v);
+            Set<T> otherNeighborsSet = new HashSet<>((Collection<T>) otherList);
             if (!thisNeighborsSet.equals(otherNeighborsSet)) {
                 return false;
             }
@@ -167,7 +169,7 @@ public class AdjacencyMatrixGraph implements Graph {
     @Override
     public int hashCode() {
         int result = getVertices().hashCode();
-        for (String v : getVertices()) {
+        for (T v : getVertices()) {
             result = 31 * result + new HashSet<>(getNeighbors(v)).hashCode();
         }
         return result;
@@ -177,7 +179,7 @@ public class AdjacencyMatrixGraph implements Graph {
     public String toString() {
         StringBuilder sb = new StringBuilder("Graph (Adjacency Matrix):\n");
         sb.append("Vertices: ").append(getVertices()).append("\n");
-        for (String v : getVertices()) {
+        for (T v : getVertices()) {
             sb.append(v).append(" -> ").append(getNeighbors(v)).append("\n");
         }
         return sb.toString();

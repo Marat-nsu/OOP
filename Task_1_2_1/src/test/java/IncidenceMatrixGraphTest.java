@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 public class IncidenceMatrixGraphTest {
-    private IncidenceMatrixGraph graph;
+    private IncidenceMatrixGraph<String> graph;
     @TempDir
     File tempDir;
 
     @BeforeEach
     void setUp() {
-        graph = new IncidenceMatrixGraph();
+        graph = new IncidenceMatrixGraph<>();
     }
 
     @AfterEach
@@ -190,7 +190,7 @@ public class IncidenceMatrixGraphTest {
 
     @Test
     void testEqualsDifferentVertices() {
-        IncidenceMatrixGraph other = new IncidenceMatrixGraph();
+        IncidenceMatrixGraph<String> other = new IncidenceMatrixGraph<>();
         graph.addVertex("A");
         other.addVertex("B");
         Assertions.assertNotEquals(graph, other);
@@ -198,7 +198,7 @@ public class IncidenceMatrixGraphTest {
 
     @Test
     void testEqualsSameStructure() {
-        IncidenceMatrixGraph other = new IncidenceMatrixGraph();
+        IncidenceMatrixGraph<String> other = new IncidenceMatrixGraph<>();
         graph.addEdge("A", "B");
         graph.addEdge("B", "C");
         other.addEdge("A", "B");
@@ -208,7 +208,7 @@ public class IncidenceMatrixGraphTest {
 
     @Test
     void testEqualsDifferentEdges() {
-        IncidenceMatrixGraph other = new IncidenceMatrixGraph();
+        IncidenceMatrixGraph<String> other = new IncidenceMatrixGraph<>();
         graph.addEdge("A", "B");
         other.addEdge("A", "C");
         Assertions.assertNotEquals(graph, other);
