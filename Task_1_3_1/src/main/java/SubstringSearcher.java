@@ -5,7 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SubstringSearcher {
+    private SubstringSearcher() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static List<Integer> find(String filename, String pattern) throws IOException {
         List<Integer> result = new ArrayList<>();
         if (pattern == null || pattern.length() == 0) {
