@@ -158,4 +158,13 @@ public class SubstringSearcherTest {
         assertEquals(5, result.get(0));
         assertEquals(18, result.get(1));
     }
+
+    @Test
+    void testChineseCharacters() throws IOException {
+        testFile = tempDir.resolve("chinese.txt");
+        Files.write(testFile, "你好世界你好中国".getBytes(StandardCharsets.UTF_8));
+
+        List<Integer> result = SubstringSearcher.find(testFile.toString(), "你好");
+        assertEquals(Arrays.asList(0, 4), result);
+    }
 }
