@@ -167,4 +167,25 @@ public class SubstringSearcherTest {
         List<Integer> result = SubstringSearcher.find(testFile.toString(), "你好");
         assertEquals(Arrays.asList(0, 4), result);
     }
+
+    @Test
+    void testPatternCrossingBufferBoundary() throws IOException {
+        testFile = tempDir.resolve("boundary.txt");
+        int bufferSize = 8192;
+        StringBuilder sb = new StringBuilder();
+        
+        String pattern = "CROSSING";
+        int startPattern = bufferSize - 4;
+        
+        for (int i = 0; i < startPattern; i++) {
+            sb.append('a');
+        }
+        sb.append(pattern);
+        sb.append("aaaa");
+        
+        Files.write(testFile, sb.toString().getBytes(StandardCharsets.UTF_8));
+
+        List<Integer> result = SubstringSearcher.find(testFile.toString(), pattern);
+        assertEquals(Arrays.asList(startPattern), result);
+    }
 }
