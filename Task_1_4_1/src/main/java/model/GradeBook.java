@@ -35,19 +35,12 @@ public class GradeBook {
     }
 
     public double calculateAverageGrade() {
-        int totalGrade = 0;
-        int count = 0;
-
-        for (Semester semester : semesters) {
-            for (Subject subject : semester.getSubjects()) {
-                if (subject.getGrade().isGraded()) {
-                    totalGrade += subject.getGrade().getValue();
-                    count++;
-                }
-            }
-        }
-
-        return count > 0 ? (double) totalGrade / count : 0.0;
+        return semesters.stream()
+                .flatMap(semester -> semester.getSubjects().stream())
+                .filter(subject -> subject.getGrade().isGraded())
+                .mapToInt(subject -> subject.getGrade().getValue())
+                .average()
+                .orElse(0.0);
     }
 
     /**
@@ -81,34 +74,28 @@ public class GradeBook {
      * 3. Оценка за ВКР "отлично" (если выполнена)
      */
     public boolean canGetRedDiploma() {
-        List<Subject> diplomaSubjects = new ArrayList<>();
-
-        for (Semester semester : semesters) {
-            for (Subject subject : semester.getSubjects()) {
-                if (subject.countsForDiploma()) {
-                    diplomaSubjects.add(subject);
-                }
-            }
-        }
+        List<Subject> diplomaSubjects = semesters.stream()
+                .flatMap(semester -> semester.getSubjects().stream())
+                .filter(Subject::countsForDiploma)
+                .toList();
 
         if (diplomaSubjects.isEmpty()) {
             return false;
         }
 
-        int excellentCount = 0;
-        int totalCount = 0;
-
-        for (Subject subject : diplomaSubjects) {
-            if (subject.getGrade() == Grade.SATISFACTORY) {
-                return false;
-            }
-            if (subject.getGrade().isGraded()) {
-                totalCount++;
-                if (subject.getGrade() == Grade.EXCELLENT) {
-                    excellentCount++;
-                }
-            }
+        if (diplomaSubjects.stream()
+                .anyMatch(subject -> subject.getGrade() == Grade.SATISFACTORY)) {
+            return false;
         }
+
+        long totalCount = diplomaSubjects.stream()
+                .filter(subject -> subject.getGrade().isGraded())
+                .count();
+
+        long excellentCount = diplomaSubjects.stream()
+                .filter(subject -> subject.getGrade().isGraded())
+                .filter(subject -> subject.getGrade() == Grade.EXCELLENT)
+                .count();
 
         double excellentPercentage = totalCount > 0
                 ? (double) excellentCount / totalCount : 0.0;
@@ -136,14 +123,9 @@ public class GradeBook {
 
         Semester lastSemester = semesters.get(semesters.size() - 1);
 
-        for (Subject subject : lastSemester.getSubjects()) {
-            Grade grade = subject.getGrade();
-            if (grade.isGraded() && grade != Grade.EXCELLENT) {
-                return false;
-            }
-        }
-
-        return true;
+        return lastSemester.getSubjects().stream()
+                .filter(subject -> subject.getGrade().isGraded())
+                .allMatch(subject -> subject.getGrade() == Grade.EXCELLENT);
     }
 
     @Override
@@ -155,13 +137,13 @@ public class GradeBook {
                 .append(isPaidEducation ? "Платная" : "Бюджетная").append("\n");
         sb.append("Всего семестров: ").append(semesters.size()).append("\n\n");
 
-        for (Semester semester : semesters) {
+        semesters.forEach(semester -> {
             sb.append(semester).append("\n");
-            for (Subject subject : semester.getSubjects()) {
-                sb.append("  ").append(subject).append("\n");
-            }
+            semester.getSubjects().forEach(subject -> 
+                sb.append("  ").append(subject).append("\n")
+            );
             sb.append("\n");
-        }
+        });
 
         if (thesisGrade != null) {
             sb.append("Квалификационная работа: ").append(thesisGrade).append("\n\n");

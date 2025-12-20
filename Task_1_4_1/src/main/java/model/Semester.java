@@ -24,22 +24,14 @@ public class Semester {
     }
 
     public List<Subject> getExams() {
-        List<Subject> exams = new ArrayList<>();
-        for (Subject subject : subjects) {
-            if (subject.isExam()) {
-                exams.add(subject);
-            }
-        }
-        return exams;
+        return subjects.stream()
+                .filter(Subject::isExam)
+                .toList();
     }
 
     public boolean hasSatisfactoryInExams() {
-        for (Subject subject : subjects) {
-            if (subject.isExam() && subject.getGrade() == Grade.SATISFACTORY) {
-                return true;
-            }
-        }
-        return false;
+        return subjects.stream()
+                .anyMatch(subject -> subject.isExam() && subject.getGrade() == Grade.SATISFACTORY);
     }
 
     @Override
