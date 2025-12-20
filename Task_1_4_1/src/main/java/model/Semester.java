@@ -3,7 +3,9 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class Semester {
     private final int semesterNumber;
     private final List<Subject> subjects;
@@ -11,10 +13,6 @@ public class Semester {
     public Semester(int semesterNumber) {
         this.semesterNumber = semesterNumber;
         this.subjects = new ArrayList<>();
-    }
-
-    public int getSemesterNumber() {
-        return semesterNumber;
     }
 
     public void addSubject(Subject subject) {

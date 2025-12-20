@@ -1,6 +1,8 @@
 package model;
 
+import lombok.Getter;
 
+@Getter
 public enum Grade {
     EXCELLENT(5),      // Отлично
     GOOD(4),          // Хорошо
@@ -11,10 +13,6 @@ public enum Grade {
 
     Grade(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public boolean isGraded() {

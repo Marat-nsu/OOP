@@ -4,15 +4,19 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Электронная зачетная книжка студента ФИТ.
  */
+@Getter
 public class GradeBook {
     private final String studentName;
     private final boolean isPaidEducation;
     private final List<Semester> semesters;
     // Оценка за ВКР.
+    @Setter
     private Grade thesisGrade;
 
     public GradeBook(String studentName, boolean isPaidEducation) {
@@ -26,24 +30,8 @@ public class GradeBook {
         semesters.add(semester);
     }
 
-    public void setThesisGrade(Grade grade) {
-        this.thesisGrade = grade;
-    }
-
-    public String getStudentName() {
-        return studentName;
-    }
-
-    public boolean isPaidEducation() {
-        return isPaidEducation;
-    }
-
     public List<Semester> getSemesters() {
         return Collections.unmodifiableList(semesters);
-    }
-
-    public Grade getThesisGrade() {
-        return thesisGrade;
     }
 
     public double calculateAverageGrade() {
