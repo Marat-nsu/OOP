@@ -186,6 +186,7 @@ public class SubstringSearcherTest {
         Files.write(testFile, sb.toString().getBytes(StandardCharsets.UTF_8));
 
         List<Integer> result = SubstringSearcher.find(testFile.toString(), pattern);
+        assertEquals(result.get(0), 8192 - 4);
         assertEquals(Arrays.asList(startPattern), result);
     }
 }
