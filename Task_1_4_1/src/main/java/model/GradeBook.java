@@ -2,7 +2,10 @@ package model;
 
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,12 +75,20 @@ public class GradeBook {
      * 2. Отсутствие оценок "удовлетворительно" 
      * в итоговых оценках (экзамены и дифференцированные зачеты)
      * 3. Оценка за ВКР "отлично" (если выполнена)
+     * Примечание:
+     * Итоговая оценка = последняя оценка за курс, если курс идет несколько семестров.
      */
     public boolean canGetRedDiploma() {
-        List<Subject> diplomaSubjects = semesters.stream()
+        Collection<Subject> diplomaSubjects = semesters.stream()
+                .sorted(Comparator.comparingInt(Semester::getSemesterNumber))
                 .flatMap(semester -> semester.getSubjects().stream())
                 .filter(Subject::countsForDiploma)
-                .toList();
+                .collect(Collectors.toMap(
+                        Subject::getName,
+                        subject -> subject,
+                        (existing, replacement) -> replacement
+                ))
+                .values();
 
         if (diplomaSubjects.isEmpty()) {
             return false;

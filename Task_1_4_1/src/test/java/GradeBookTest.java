@@ -324,4 +324,23 @@ public class GradeBookTest {
 
         assertTrue(gradeBook.canGetIncreasedScholarship());
     }
+
+    @Test
+    void testRedDiplomaUsesLastGrade() {
+        Semester semester1 = new Semester(1);
+        semester1.addSubject(new Subject("Math", SubjectType.EXAM, Grade.SATISFACTORY));
+        gradeBook.addSemester(semester1);
+
+        Semester semester2 = new Semester(2);
+        semester2.addSubject(new Subject("Math", SubjectType.EXAM, Grade.EXCELLENT));
+
+        semester2.addSubject(new Subject("Programming", SubjectType.EXAM, Grade.EXCELLENT));
+        semester2.addSubject(new Subject("Algorithms", SubjectType.EXAM, Grade.EXCELLENT));
+        semester2.addSubject(new Subject("English", SubjectType.EXAM, Grade.EXCELLENT));
+        gradeBook.addSemester(semester2);
+
+        gradeBook.setThesisGrade(Grade.EXCELLENT);
+
+        assertTrue(gradeBook.canGetRedDiploma());
+    }
 }
