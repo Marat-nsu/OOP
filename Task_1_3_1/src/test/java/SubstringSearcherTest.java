@@ -169,6 +169,16 @@ public class SubstringSearcherTest {
     }
 
     @Test
+    void testEmojiCharacters() throws IOException {
+        testFile = tempDir.resolve("emoji.txt");
+        Files.write(testFile, "😀😃😄😁😆😀".getBytes(StandardCharsets.UTF_8));
+
+        List<Integer> result = SubstringSearcher.find(testFile.toString(), "😀");
+        assertEquals(result.get(0), 0);
+        assertEquals(result.get(1), 10);
+    }
+
+    @Test
     void testPatternCrossingBufferBoundary() throws IOException {
         testFile = tempDir.resolve("boundary.txt");
         int bufferSize = 8192;
