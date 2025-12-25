@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+
+    compileOnly("org.projectlombok:lombok:1.18.42")
+	annotationProcessor("org.projectlombok:lombok:1.18.42")
+	testCompileOnly("org.projectlombok:lombok:1.18.42")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+}
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClass = 'ru.nsu.fit.Main'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
