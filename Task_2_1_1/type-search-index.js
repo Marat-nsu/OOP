@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"BenchmarkVisualizer"},{"p":"<Unnamed>","l":"Main"},{"p":"<Unnamed>","l":"ParallelStreamSolution"},{"p":"<Unnamed>","l":"ParallelThreadSolution"},{"p":"<Unnamed>","l":"PrimeUtils"},{"p":"<Unnamed>","l":"SequentialSolution"}];updateSearchResults();
