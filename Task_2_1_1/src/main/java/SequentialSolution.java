@@ -1,4 +1,5 @@
-public class SequentialSolution {
+public class SequentialSolution implements Solution {
+    @Override
     public boolean containsNonPrime(int[] numbers) {
         for (int number : numbers) {
             if (!PrimeUtils.isPrime(number)) {

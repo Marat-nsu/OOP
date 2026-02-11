@@ -31,11 +31,11 @@ public class BenchmarkVisualizer {
         System.out.printf("%-18s %.3f%n", "Seq (No1)", seqMs);
 
         // Параллельные потоки с разным количеством.
-        ParallelThreadSolution threadSolver = new ParallelThreadSolution();
         for (int t : threadCounts) {
+            ParallelThreadSolution threadSolver = new ParallelThreadSolution(t);
             double ms = measureMillis(() -> {
                 try {
-                    return threadSolver.containsNonPrime(data, t);
+                    return threadSolver.containsNonPrime(data);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(e);

@@ -1,13 +1,20 @@
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ParallelThreadSolution {
-    public boolean containsNonPrime(int[] numbers, int threadCount) throws InterruptedException {
+public class ParallelThreadSolution implements Solution {
+    private final int threadCount;
+
+    public ParallelThreadSolution(int threadCount) {
+        if (threadCount <= 0) {
+            throw new IllegalArgumentException("Thread count must be positive");
+        }
+        this.threadCount = threadCount;
+    }
+
+    @Override
+    public boolean containsNonPrime(int[] numbers) throws InterruptedException {
         int len = numbers.length;
         if (len == 0) {
             return false;
-        }
-        if (threadCount <= 0) {
-            throw new IllegalArgumentException("Thread count must be positive");
         }
 
         final AtomicBoolean result = new AtomicBoolean(false);
@@ -38,7 +45,7 @@ public class ParallelThreadSolution {
                 t.join();
             }
         }
-        
+
         return result.get();
     }
 }
