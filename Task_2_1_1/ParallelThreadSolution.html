@@ -72,9 +72,14 @@ loadScripts(document, 'script');</script>
 <div class="inheritance">ParallelThreadSolution</div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="Solution.html" title="interface in Unnamed Package">Solution</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ParallelThreadSolution</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="Solution.html" title="interface in Unnamed Package">Solution</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -86,7 +91,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">ParallelThreadSolution</a>()</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">ParallelThreadSolution</a><wbr>(int&nbsp;threadCount)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -103,8 +108,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsNonPrime(int%5B%5D,int)" class="member-name-link">containsNonPrime</a><wbr>(int[]&nbsp;numbers,
- int&nbsp;threadCount)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsNonPrime(int%5B%5D)" class="member-name-link">containsNonPrime</a><wbr>(int[]&nbsp;numbers)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -124,9 +128,9 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;()">
+<section class="detail" id="&lt;init&gt;(int)">
 <h3>ParallelThreadSolution</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ParallelThreadSolution</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ParallelThreadSolution</span><wbr><span class="parameters">(int&nbsp;threadCount)</span></div>
 </section>
 </li>
 </ul>
@@ -138,12 +142,13 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="containsNonPrime(int[],int)">
+<section class="detail" id="containsNonPrime(int[])">
 <h3>containsNonPrime</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">containsNonPrime</span><wbr><span class="parameters">(int[]&nbsp;numbers,
- int&nbsp;threadCount)</span>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">containsNonPrime</span><wbr><span class="parameters">(int[]&nbsp;numbers)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></span></div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="Solution.html#containsNonPrime(int%5B%5D)">containsNonPrime</a></code>&nbsp;in interface&nbsp;<code><a href="Solution.html" title="interface in Unnamed Package">Solution</a></code></dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/InterruptedException.html" title="class or interface in java.lang" class="external-link">InterruptedException</a></code></dd>
 </dl>
