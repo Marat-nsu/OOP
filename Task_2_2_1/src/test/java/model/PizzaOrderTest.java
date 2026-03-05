@@ -10,14 +10,14 @@ public class PizzaOrderTest {
     public void testOrderCreation() {
         PizzaOrder order = new PizzaOrder("Pepperoni");
         assertEquals("Pepperoni", order.getType());
-        assertEquals("Pending", order.getStatus());
+        assertEquals(OrderStatus.QUEUED, order.getStatus());
     }
 
     @Test
     public void testOrderStatusUpdate() {
         PizzaOrder order = new PizzaOrder("Margherita");
-        order.setStatus("In Progress");
-        assertEquals("In Progress", order.getStatus());
+        order.setStatus(OrderStatus.BAKING);
+        assertEquals(OrderStatus.BAKING, order.getStatus());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class PizzaOrderTest {
     @Test
     public void testFormattedStatus() {
         PizzaOrder order = new PizzaOrder("Four Cheese");
-        order.setStatus("Ready");
-        assertEquals("[" + order.getId() + "] Ready", order.formattedStatus());
+        order.setStatus(OrderStatus.STORED);
+        assertEquals("[" + order.getId() + "] [STORED]", order.formattedStatus());
     }
 }

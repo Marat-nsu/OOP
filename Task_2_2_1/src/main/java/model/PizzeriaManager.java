@@ -54,27 +54,31 @@ public class PizzeriaManager {
             throw new IllegalStateException("Pizzeria is not accepting new orders");
         }
         PizzaOrder order = new PizzaOrder(pizzaType);
-        orderQueue.addOrder(order);
-        order.setStatus("Placed");
+        order.setStatus(OrderStatus.QUEUED);
         System.out.println(order.formattedStatus());
+        orderQueue.addOrder(order);
     }
 
     public void stopPizzeria() {
         acceptingOrders = false;
         orderQueue.close();
 
-        joinThreads(bakerThreads);
+        joinThreads(bakerThreads, "Baker");
         warehouse.close();
-        joinThreads(courierThreads);
-        System.out.println("Pizzeria stopped.");
+        joinThreads(courierThreads, "Courier");
     }
 
-    private void joinThreads(List<Thread> threads) {
+    private void joinThreads(List<Thread> threads, String workerType) {
         for (Thread thread : threads) {
             try {
-                thread.join(5000);
+                thread.join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                throw new IllegalStateException(workerType + " shutdown interrupted", e);
+            }
+
+            if (thread.isAlive()) {
+                throw new IllegalStateException(workerType + " thread did not terminate: " + thread.getName());
             }
         }
     }

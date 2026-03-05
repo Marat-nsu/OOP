@@ -22,22 +22,18 @@ public class PizzaBaker implements Runnable {
                     break; // queue closed and drained
                 }
 
-                order.setStatus("Baking in progress by baker " + id);
-                System.out.println(order.formattedStatus());
+                order.transitionTo(OrderStatus.BAKING);
 
                 Thread.sleep(bakingSpeed);
 
-                order.setStatus("Baked by baker " + id);
-                System.out.println(order.formattedStatus());
+                order.transitionTo(OrderStatus.RESERVING_WAREHOUSE_SLOT);
 
                 warehouse.storePizza(order);
 
-                order.setStatus("Stored in warehouse by baker " + id);
-                System.out.println(order.formattedStatus());
+                order.transitionTo(OrderStatus.STORED);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.out.println("Baker " + id + " interrupted.");
         }
     }
 

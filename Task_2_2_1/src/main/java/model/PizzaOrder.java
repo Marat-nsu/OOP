@@ -7,12 +7,12 @@ public class PizzaOrder {
 
     private final int id;
     private final String type;
-    private String status;
+    private volatile OrderStatus status;
 
     public PizzaOrder(String type) {
         this.id = idCounter.incrementAndGet();
         this.type = type;
-        this.status = "Pending";
+        this.status = OrderStatus.QUEUED;
     }
 
     public int getId() {
@@ -23,16 +23,21 @@ public class PizzaOrder {
         return type;
     }
 
-    public String getStatus() {
+    public synchronized OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public synchronized void setStatus(OrderStatus status) {
         this.status = status;
     }
 
-    public String formattedStatus() {
-        return "[" + id + "] " + status;
+    public synchronized void transitionTo(OrderStatus status) {
+        this.status = status;
+        System.out.println(formattedStatus());
+    }
+
+    public synchronized String formattedStatus() {
+        return "[" + id + "] [" + status + "]";
     }
 
     @Override

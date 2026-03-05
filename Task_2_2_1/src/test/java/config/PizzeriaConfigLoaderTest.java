@@ -31,4 +31,15 @@ class PizzeriaConfigLoaderTest {
 
         assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()));
     }
+
+    @Test
+    void throwsWhenNonPositiveValues(@TempDir Path tempDir) throws IOException {
+        String badConfig = """
+            {"bakersCount":1,"bakingSpeeds":[0],"couriersCount":1,"trunkCapacities":[-1],"warehouseCapacity":0}
+            """;
+        Path file = tempDir.resolve("non-positive.json");
+        Files.writeString(file, badConfig);
+
+        assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()));
+    }
 }

@@ -24,8 +24,7 @@ public class PizzaCourier implements Runnable {
                 if (first == null) {
                     break; // warehouse closed and empty
                 }
-                first.setStatus("Picked up by courier " + id);
-                System.out.println(first.formattedStatus());
+                first.transitionTo(OrderStatus.PICKED_UP_BY_COURIER);
                 delivery.add(first);
 
                 while (delivery.size() < trunkCapacity) {
@@ -33,22 +32,18 @@ public class PizzaCourier implements Runnable {
                     if (next == null) {
                         break;
                     }
-                    next.setStatus("Picked up by courier " + id);
-                    System.out.println(next.formattedStatus());
+                    next.transitionTo(OrderStatus.PICKED_UP_BY_COURIER);
                     delivery.add(next);
                 }
 
-                System.out.println("Courier " + id + " delivering " + delivery.size() + " pizzas.");
                 Thread.sleep(2000);
 
                 for (PizzaOrder pizza : delivery) {
-                    pizza.setStatus("Delivered by courier " + id);
-                    System.out.println(pizza.formattedStatus());
+                    pizza.transitionTo(OrderStatus.DELIVERED);
                 }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.out.println("Courier " + id + " interrupted.");
         }
     }
 }

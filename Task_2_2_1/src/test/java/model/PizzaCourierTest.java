@@ -29,7 +29,7 @@ class PizzaCourierTest {
         worker.join(4000);
 
         assertFalse(worker.isAlive(), "Courier thread should finish after warehouse empties and closes");
-        assertEquals("Delivered by courier 1", first.getStatus());
-        assertEquals("Delivered by courier 1", second.getStatus());
+        assertEquals(OrderStatus.DELIVERED, first.getStatus());
+        assertEquals(OrderStatus.DELIVERED, second.getStatus());
     }
 }

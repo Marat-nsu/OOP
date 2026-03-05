@@ -14,9 +14,14 @@ public class Warehouse {
     }
 
     public synchronized void storePizza(PizzaOrder order) throws InterruptedException {
-        while (storedPizzas.size() >= capacity) {
+        while (storedPizzas.size() >= capacity && !closed) {
             wait();
         }
+
+        if (closed) {
+            throw new IllegalStateException("Warehouse is closed for storing pizzas");
+        }
+
         storedPizzas.add(order);
         notifyAll();
     }
