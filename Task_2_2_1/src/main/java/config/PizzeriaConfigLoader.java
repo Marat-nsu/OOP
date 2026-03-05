@@ -60,11 +60,36 @@ public class PizzeriaConfigLoader {
         if (getTrunkCapacities().length != getCourierCount()) {
             throw new IllegalArgumentException("trunkCapacities length must match couriersCount");
         }
+
+        validatePositive("bakersCount", getBakersCount());
+        validatePositive("couriersCount", getCourierCount());
+        validatePositive("warehouseCapacity", getWarehouseCapacity());
+
+        validatePositiveArray("bakingSpeeds", getBakingSpeeds());
+        validatePositiveArray("trunkCapacities", getTrunkCapacities());
     }
 
     private void requireField(String fieldName) {
         if (!config.hasNonNull(fieldName)) {
             throw new IllegalArgumentException("Missing field: " + fieldName);
+        }
+    }
+
+    private void validatePositive(String fieldName, int value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(fieldName + " must be greater than 0");
+        }
+    }
+
+    private void validatePositiveArray(String fieldName, int[] values) {
+        if (values.length == 0) {
+            throw new IllegalArgumentException(fieldName + " must not be empty");
+        }
+
+        for (int value : values) {
+            if (value <= 0) {
+                throw new IllegalArgumentException(fieldName + " values must be greater than 0");
+            }
         }
     }
 }
