@@ -1,6 +1,5 @@
 package model;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,7 +67,7 @@ class PizzeriaManagerTest {
             if (line.isBlank()) {
                 continue;
             }
-            assertTrue(line.matches("^\\\\[\\\\d+] \\\\[([A-Z_]+)]$"), "Unexpected log line: " + line);
+            assertTrue(line.matches("^\\[\\d+\\] \\[[A-Z_]+\\]$"), "Unexpected log line: " + line);
         }
 
         assertTrue(output.contains("[QUEUED]"));
