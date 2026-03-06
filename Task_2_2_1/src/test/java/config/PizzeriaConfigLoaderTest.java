@@ -14,11 +14,12 @@ class PizzeriaConfigLoaderTest {
 
     @Test
     void loadsConfigValues() throws Exception {
-        PizzeriaConfigLoader loader = new PizzeriaConfigLoader("src/main/resources/pizzeria_config.json");
+        PizzeriaConfigSource configSource = new PizzeriaConfigLoader("src/main/resources/pizzeria_config.json");
+        PizzeriaConfig config = configSource.load();
 
-        assertEquals(3, loader.getBakersCount());
-        assertEquals(2, loader.getCourierCount());
-        assertEquals(10, loader.getWarehouseCapacity());
+        assertEquals(3, config.bakersCount());
+        assertEquals(2, config.couriersCount());
+        assertEquals(10, config.warehouseCapacity());
     }
 
     @Test
@@ -29,7 +30,7 @@ class PizzeriaConfigLoaderTest {
         Path file = tempDir.resolve("bad.json");
         Files.writeString(file, badConfig);
 
-        assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()));
+        assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()).load());
     }
 
     @Test
@@ -40,6 +41,6 @@ class PizzeriaConfigLoaderTest {
         Path file = tempDir.resolve("non-positive.json");
         Files.writeString(file, badConfig);
 
-        assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()));
+        assertThrows(IllegalArgumentException.class, () -> new PizzeriaConfigLoader(file.toString()).load());
     }
 }

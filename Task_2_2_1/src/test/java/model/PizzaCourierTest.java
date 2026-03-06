@@ -9,7 +9,11 @@ class PizzaCourierTest {
     @Test
     void testCourierInitialization() {
         Warehouse warehouse = new Warehouse(10);
-        PizzaCourier courier = new PizzaCourier(1, 5, warehouse);
+        OrderStatusSink statusSink = order -> {
+        };
+        DelayStrategy delayStrategy = millis -> {
+        };
+        PizzaCourier courier = new PizzaCourier(1, 5, warehouse, statusSink, delayStrategy);
 
         assertNotNull(courier);
     }
@@ -23,10 +27,14 @@ class PizzaCourierTest {
         warehouse.storePizza(second);
         warehouse.close();
 
-        PizzaCourier courier = new PizzaCourier(1, 2, warehouse);
+        OrderStatusSink statusSink = order -> {
+        };
+        DelayStrategy delayStrategy = millis -> {
+        };
+        PizzaCourier courier = new PizzaCourier(1, 2, warehouse, statusSink, delayStrategy);
         Thread worker = new Thread(courier);
         worker.start();
-        worker.join(4000);
+        worker.join(1000);
 
         assertFalse(worker.isAlive(), "Courier thread should finish after warehouse empties and closes");
         assertEquals(OrderStatus.DELIVERED, first.getStatus());

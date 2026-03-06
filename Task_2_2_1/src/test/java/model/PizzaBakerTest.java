@@ -9,7 +9,11 @@ class PizzaBakerTest {
     void testBakerInitialization() {
         OrderQueue orderQueue = new OrderQueue();
         Warehouse warehouse = new Warehouse(10);
-        PizzaBaker baker = new PizzaBaker(1, 1000, orderQueue, warehouse);
+        OrderStatusSink statusSink = order -> {
+        };
+        DelayStrategy delayStrategy = millis -> {
+        };
+        PizzaBaker baker = new PizzaBaker(1, 1000, orderQueue, warehouse, statusSink, delayStrategy);
 
         assertEquals(1, baker.getId());
     }
@@ -18,7 +22,11 @@ class PizzaBakerTest {
     void bakerProcessesOrderAndStopsWhenQueueClosed() throws Exception {
         OrderQueue orderQueue = new OrderQueue();
         Warehouse warehouse = new Warehouse(5);
-        PizzaBaker baker = new PizzaBaker(1, 1, orderQueue, warehouse);
+        OrderStatusSink statusSink = order -> {
+        };
+        DelayStrategy delayStrategy = millis -> {
+        };
+        PizzaBaker baker = new PizzaBaker(1, 1, orderQueue, warehouse, statusSink, delayStrategy);
 
         orderQueue.addOrder(new PizzaOrder("Test"));
         orderQueue.close();

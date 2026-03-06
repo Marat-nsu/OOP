@@ -5,71 +5,67 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class PizzeriaConfigLoader {
-    private final JsonNode config;
+public class PizzeriaConfigLoader implements PizzeriaConfigSource {
+    private final String configFilePath;
 
-    public PizzeriaConfigLoader(String configFilePath) throws IOException {
+    public PizzeriaConfigLoader(String configFilePath) {
+        this.configFilePath = configFilePath;
+    }
+
+    @Override
+    public PizzeriaConfig load() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        config = objectMapper.readTree(new File(configFilePath));
-        validateConfig();
+        JsonNode config = objectMapper.readTree(new File(configFilePath));
+        validateConfig(config);
+
+        return new PizzeriaConfig(
+                config.get("bakersCount").asInt(),
+                readIntArray(config.get("bakingSpeeds")),
+                config.get("couriersCount").asInt(),
+                readIntArray(config.get("trunkCapacities")),
+                config.get("warehouseCapacity").asInt());
     }
 
-    public int getBakersCount() {
-        return config.get("bakersCount").asInt();
-    }
-
-    public int[] getBakingSpeeds() {
-        JsonNode speedsNode = config.get("bakingSpeeds");
-        int[] speeds = new int[speedsNode.size()];
-        for (int i = 0; i < speedsNode.size(); i++) {
-            speeds[i] = speedsNode.get(i).asInt();
+    private int[] readIntArray(JsonNode node) {
+        int[] values = new int[node.size()];
+        for (int i = 0; i < node.size(); i++) {
+            values[i] = node.get(i).asInt();
         }
-        return speeds;
+        return values;
     }
 
-    public int getCourierCount() {
-        return config.get("couriersCount").asInt();
-    }
-
-    public int[] getTrunkCapacities() {
-        JsonNode capacitiesNode = config.get("trunkCapacities");
-        int[] capacities = new int[capacitiesNode.size()];
-        for (int i = 0; i < capacitiesNode.size(); i++) {
-            capacities[i] = capacitiesNode.get(i).asInt();
-        }
-        return capacities;
-    }
-
-    public int getWarehouseCapacity() {
-        return config.get("warehouseCapacity").asInt();
-    }
-
-    private void validateConfig() {
+    private void validateConfig(JsonNode config) {
         if (config == null) {
             throw new IllegalArgumentException("Config file is empty or unreadable");
         }
-        requireField("bakersCount");
-        requireField("bakingSpeeds");
-        requireField("couriersCount");
-        requireField("trunkCapacities");
-        requireField("warehouseCapacity");
+        requireField(config, "bakersCount");
+        requireField(config, "bakingSpeeds");
+        requireField(config, "couriersCount");
+        requireField(config, "trunkCapacities");
+        requireField(config, "warehouseCapacity");
 
-        if (getBakingSpeeds().length != getBakersCount()) {
+        int bakersCount = config.get("bakersCount").asInt();
+        int couriersCount = config.get("couriersCount").asInt();
+        int warehouseCapacity = config.get("warehouseCapacity").asInt();
+        int[] bakingSpeeds = readIntArray(config.get("bakingSpeeds"));
+        int[] trunkCapacities = readIntArray(config.get("trunkCapacities"));
+
+        if (bakingSpeeds.length != bakersCount) {
             throw new IllegalArgumentException("bakingSpeeds length must match bakersCount");
         }
-        if (getTrunkCapacities().length != getCourierCount()) {
+        if (trunkCapacities.length != couriersCount) {
             throw new IllegalArgumentException("trunkCapacities length must match couriersCount");
         }
 
-        validatePositive("bakersCount", getBakersCount());
-        validatePositive("couriersCount", getCourierCount());
-        validatePositive("warehouseCapacity", getWarehouseCapacity());
+        validatePositive("bakersCount", bakersCount);
+        validatePositive("couriersCount", couriersCount);
+        validatePositive("warehouseCapacity", warehouseCapacity);
 
-        validatePositiveArray("bakingSpeeds", getBakingSpeeds());
-        validatePositiveArray("trunkCapacities", getTrunkCapacities());
+        validatePositiveArray("bakingSpeeds", bakingSpeeds);
+        validatePositiveArray("trunkCapacities", trunkCapacities);
     }
 
-    private void requireField(String fieldName) {
+    private void requireField(JsonNode config, String fieldName) {
         if (!config.hasNonNull(fieldName)) {
             throw new IllegalArgumentException("Missing field: " + fieldName);
         }

@@ -1,10 +1,20 @@
+import config.PizzeriaConfig;
+import config.PizzeriaConfigLoader;
+import config.PizzeriaConfigSource;
+import model.ConsoleOrderStatusSink;
+import model.OrderStatusSink;
 import model.PizzeriaManager;
 
 public class Main {
     public static void main(String[] args) {
         PizzeriaManager pizzeria = null;
         try {
-            pizzeria = new PizzeriaManager("src/main/resources/pizzeria_config.json");
+            PizzeriaConfigSource configSource = new PizzeriaConfigLoader("src/main/resources/pizzeria_config.json");
+            PizzeriaConfig config = configSource.load();
+
+            OrderStatusSink statusSink = new ConsoleOrderStatusSink();
+            PizzeriaFactory factory = new PizzeriaFactory();
+            pizzeria = factory.create(config, statusSink);
             pizzeria.startPizzeria();
 
             pizzeria.placeOrder("Margherita");

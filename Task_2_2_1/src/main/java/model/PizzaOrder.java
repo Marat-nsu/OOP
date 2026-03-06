@@ -27,13 +27,8 @@ public class PizzaOrder {
         return status;
     }
 
-    public synchronized void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
     public synchronized void transitionTo(OrderStatus status) {
         this.status = status;
-        System.out.println(formattedStatus());
     }
 
     public synchronized String formattedStatus() {

@@ -16,7 +16,7 @@ public class PizzaOrderTest {
     @Test
     public void testOrderStatusUpdate() {
         PizzaOrder order = new PizzaOrder("Margherita");
-        order.setStatus(OrderStatus.BAKING);
+        order.transitionTo(OrderStatus.BAKING);
         assertEquals(OrderStatus.BAKING, order.getStatus());
     }
 
@@ -30,7 +30,7 @@ public class PizzaOrderTest {
     @Test
     public void testFormattedStatus() {
         PizzaOrder order = new PizzaOrder("Four Cheese");
-        order.setStatus(OrderStatus.STORED);
+        order.transitionTo(OrderStatus.STORED);
         assertEquals("[" + order.getId() + "] [STORED]", order.formattedStatus());
     }
 }

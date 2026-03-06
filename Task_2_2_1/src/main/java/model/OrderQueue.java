@@ -3,7 +3,7 @@ package model;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class OrderQueue {
+public class OrderQueue implements OrdersInbox, OrdersOutbox {
     private final Queue<PizzaOrder> orders;
     private boolean accepting = true;
 
@@ -11,6 +11,7 @@ public class OrderQueue {
         this.orders = new LinkedList<>();
     }
 
+    @Override
     public synchronized void addOrder(PizzaOrder order) {
         if (!accepting) {
             throw new IllegalStateException("Pizzeria is not accepting new orders");
@@ -19,12 +20,13 @@ public class OrderQueue {
         notifyAll();
     }
 
+    @Override
     public synchronized PizzaOrder takeOrder() throws InterruptedException {
         while (orders.isEmpty() && accepting) {
             wait();
         }
         if (orders.isEmpty()) {
-            return null; // closed and empty
+            return null;
         }
         return orders.poll();
     }
@@ -33,6 +35,7 @@ public class OrderQueue {
         return orders.isEmpty();
     }
 
+    @Override
     public synchronized void close() {
         accepting = false;
         notifyAll();

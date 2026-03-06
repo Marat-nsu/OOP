@@ -3,7 +3,7 @@ package model;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Warehouse {
+public class Warehouse implements PizzaStorageIn, PizzaStorageOut {
     private final int capacity;
     private final Queue<PizzaOrder> storedPizzas;
     private boolean closed = false;
@@ -13,6 +13,7 @@ public class Warehouse {
         this.storedPizzas = new LinkedList<>();
     }
 
+    @Override
     public synchronized void storePizza(PizzaOrder order) throws InterruptedException {
         while (storedPizzas.size() >= capacity && !closed) {
             wait();
@@ -26,6 +27,7 @@ public class Warehouse {
         notifyAll();
     }
 
+    @Override
     public synchronized PizzaOrder takePizza() throws InterruptedException {
         while (storedPizzas.isEmpty() && !closed) {
             wait();
@@ -38,6 +40,7 @@ public class Warehouse {
         return pizza;
     }
 
+    @Override
     public synchronized PizzaOrder tryTakePizza() {
         if (storedPizzas.isEmpty()) {
             return null;
@@ -47,6 +50,7 @@ public class Warehouse {
         return pizza;
     }
 
+    @Override
     public synchronized void close() {
         closed = true;
         notifyAll();

@@ -1,49 +1,41 @@
 package model;
 
-import config.PizzeriaConfigLoader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PizzeriaManager {
-    private final OrderQueue orderQueue;
-    private final Warehouse warehouse;
-    private final List<PizzaBaker> bakers;
-    private final List<PizzaCourier> couriers;
+    private final OrdersInbox orderQueue;
+    private final PizzaStorageIn warehouse;
+    private final List<Worker> bakers;
+    private final List<Worker> couriers;
+    private final OrderStatusSink statusSink;
     private final List<Thread> bakerThreads;
     private final List<Thread> courierThreads;
     private volatile boolean acceptingOrders = true;
 
-    public PizzeriaManager(String configFilePath) throws IOException {
-        PizzeriaConfigLoader config = new PizzeriaConfigLoader(configFilePath);
-
-        this.orderQueue = new OrderQueue();
-        this.warehouse = new Warehouse(config.getWarehouseCapacity());
-
-        this.bakers = new ArrayList<>();
-        for (int i = 0; i < config.getBakersCount(); i++) {
-            bakers.add(new PizzaBaker(i + 1, config.getBakingSpeeds()[i], orderQueue, warehouse));
-        }
-
-        this.couriers = new ArrayList<>();
-        for (int i = 0; i < config.getCourierCount(); i++) {
-            couriers.add(new PizzaCourier(i + 1, config.getTrunkCapacities()[i], warehouse));
-        }
-
-        this.bakerThreads = new ArrayList<>();
-        this.courierThreads = new ArrayList<>();
+    public PizzeriaManager(
+            OrdersInbox orderQueue,
+            PizzaStorageIn warehouse,
+            List<Worker> bakers,
+            List<Worker> couriers,
+            OrderStatusSink statusSink) {
+        this.orderQueue = orderQueue;
+        this.warehouse = warehouse;
+        this.bakers = List.copyOf(bakers);
+        this.couriers = List.copyOf(couriers);
+        this.statusSink = statusSink;
+        this.bakerThreads = new java.util.ArrayList<>();
+        this.courierThreads = new java.util.ArrayList<>();
     }
 
     public void startPizzeria() {
-        for (PizzaBaker baker : bakers) {
-            Thread thread = new Thread(baker, "Baker-" + baker.getId());
+        for (Worker baker : bakers) {
+            Thread thread = new Thread(baker, baker.workerName());
             bakerThreads.add(thread);
             thread.start();
         }
 
-        for (int i = 0; i < couriers.size(); i++) {
-            PizzaCourier courier = couriers.get(i);
-            Thread thread = new Thread(courier, "Courier-" + (i + 1));
+        for (Worker courier : couriers) {
+            Thread thread = new Thread(courier, courier.workerName());
             courierThreads.add(thread);
             thread.start();
         }
@@ -54,8 +46,8 @@ public class PizzeriaManager {
             throw new IllegalStateException("Pizzeria is not accepting new orders");
         }
         PizzaOrder order = new PizzaOrder(pizzaType);
-        order.setStatus(OrderStatus.QUEUED);
-        System.out.println(order.formattedStatus());
+        order.transitionTo(OrderStatus.QUEUED);
+        statusSink.emit(order);
         orderQueue.addOrder(order);
     }
 
