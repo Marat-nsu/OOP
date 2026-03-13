@@ -51,7 +51,8 @@ loadScripts(document, 'script');</script>
 <span class="package-hierarchy-label">Package Hierarchies:</span>
 <ul class="horizontal">
 <li><a href="config/package-tree.html">config</a>, </li>
-<li><a href="model/package-tree.html">model</a></li>
+<li><a href="model/package-tree.html">model</a>, </li>
+<li><a href="model/api/package-tree.html">model.api</a></li>
 </ul>
 </div>
 <section class="hierarchy">
@@ -59,22 +60,22 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" class="type-name-link external-link" title="class or interface in java.lang">Object</a>
 <ul>
-<li class="circle">model.<a href="model/ConsoleOrderStatusSink.html" class="type-name-link" title="class in model">ConsoleOrderStatusSink</a> (implements model.<a href="model/OrderStatusSink.html" title="interface in model">OrderStatusSink</a>)</li>
+<li class="circle">model.<a href="model/ConsoleOrderStatusSink.html" class="type-name-link" title="class in model">ConsoleOrderStatusSink</a> (implements model.api.<a href="model/api/OrderStatusSink.html" title="interface in model.api">OrderStatusSink</a>)</li>
 <li class="circle"><a href="Main.html" class="type-name-link" title="class in Unnamed Package">Main</a></li>
-<li class="circle">model.<a href="model/OrderQueue.html" class="type-name-link" title="class in model">OrderQueue</a> (implements model.<a href="model/OrdersInbox.html" title="interface in model">OrdersInbox</a>, model.<a href="model/OrdersOutbox.html" title="interface in model">OrdersOutbox</a>)</li>
-<li class="circle">model.<a href="model/PizzaBaker.html" class="type-name-link" title="class in model">PizzaBaker</a> (implements model.<a href="model/Worker.html" title="interface in model">Worker</a>)</li>
-<li class="circle">model.<a href="model/PizzaCourier.html" class="type-name-link" title="class in model">PizzaCourier</a> (implements model.<a href="model/Worker.html" title="interface in model">Worker</a>)</li>
+<li class="circle">model.<a href="model/OrderQueue.html" class="type-name-link" title="class in model">OrderQueue</a> (implements model.api.<a href="model/api/OrdersInbox.html" title="interface in model.api">OrdersInbox</a>, model.api.<a href="model/api/OrdersOutbox.html" title="interface in model.api">OrdersOutbox</a>)</li>
+<li class="circle">model.<a href="model/PizzaBaker.html" class="type-name-link" title="class in model">PizzaBaker</a> (implements model.api.<a href="model/api/Worker.html" title="interface in model.api">Worker</a>)</li>
+<li class="circle">model.<a href="model/PizzaCourier.html" class="type-name-link" title="class in model">PizzaCourier</a> (implements model.api.<a href="model/api/Worker.html" title="interface in model.api">Worker</a>)</li>
 <li class="circle">model.<a href="model/PizzaOrder.html" class="type-name-link" title="class in model">PizzaOrder</a></li>
 <li class="circle">config.<a href="config/PizzeriaConfigLoader.html" class="type-name-link" title="class in config">PizzeriaConfigLoader</a> (implements config.<a href="config/PizzeriaConfigSource.html" title="interface in config">PizzeriaConfigSource</a>)</li>
-<li class="circle"><a href="PizzeriaFactory.html" class="type-name-link" title="class in Unnamed Package">PizzeriaFactory</a></li>
+<li class="circle">model.<a href="model/PizzeriaFactory.html" class="type-name-link" title="class in model">PizzeriaFactory</a></li>
 <li class="circle">model.<a href="model/PizzeriaManager.html" class="type-name-link" title="class in model">PizzeriaManager</a></li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
 <ul>
 <li class="circle">config.<a href="config/PizzeriaConfig.html" class="type-name-link" title="class in config">PizzeriaConfig</a></li>
 </ul>
 </li>
-<li class="circle">model.<a href="model/ThreadSleepDelay.html" class="type-name-link" title="class in model">ThreadSleepDelay</a> (implements model.<a href="model/DelayStrategy.html" title="interface in model">DelayStrategy</a>)</li>
-<li class="circle">model.<a href="model/Warehouse.html" class="type-name-link" title="class in model">Warehouse</a> (implements model.<a href="model/PizzaStorageIn.html" title="interface in model">PizzaStorageIn</a>, model.<a href="model/PizzaStorageOut.html" title="interface in model">PizzaStorageOut</a>)</li>
+<li class="circle">model.<a href="model/ThreadSleepDelay.html" class="type-name-link" title="class in model">ThreadSleepDelay</a> (implements model.api.<a href="model/api/DelayStrategy.html" title="interface in model.api">DelayStrategy</a>)</li>
+<li class="circle">model.<a href="model/Warehouse.html" class="type-name-link" title="class in model">Warehouse</a> (implements model.api.<a href="model/api/PizzaStorageIn.html" title="interface in model.api">PizzaStorageIn</a>, model.api.<a href="model/api/PizzaStorageOut.html" title="interface in model.api">PizzaStorageOut</a>)</li>
 </ul>
 </li>
 </ul>
@@ -82,16 +83,16 @@ loadScripts(document, 'script');</script>
 <section class="hierarchy">
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
-<li class="circle">model.<a href="model/DelayStrategy.html" class="type-name-link" title="interface in model">DelayStrategy</a></li>
-<li class="circle">model.<a href="model/OrdersInbox.html" class="type-name-link" title="interface in model">OrdersInbox</a></li>
-<li class="circle">model.<a href="model/OrdersOutbox.html" class="type-name-link" title="interface in model">OrdersOutbox</a></li>
-<li class="circle">model.<a href="model/OrderStatusSink.html" class="type-name-link" title="interface in model">OrderStatusSink</a></li>
-<li class="circle">model.<a href="model/PizzaStorageIn.html" class="type-name-link" title="interface in model">PizzaStorageIn</a></li>
-<li class="circle">model.<a href="model/PizzaStorageOut.html" class="type-name-link" title="interface in model">PizzaStorageOut</a></li>
+<li class="circle">model.api.<a href="model/api/DelayStrategy.html" class="type-name-link" title="interface in model.api">DelayStrategy</a></li>
+<li class="circle">model.api.<a href="model/api/OrdersInbox.html" class="type-name-link" title="interface in model.api">OrdersInbox</a></li>
+<li class="circle">model.api.<a href="model/api/OrdersOutbox.html" class="type-name-link" title="interface in model.api">OrdersOutbox</a></li>
+<li class="circle">model.api.<a href="model/api/OrderStatusSink.html" class="type-name-link" title="interface in model.api">OrderStatusSink</a></li>
+<li class="circle">model.api.<a href="model/api/PizzaStorageIn.html" class="type-name-link" title="interface in model.api">PizzaStorageIn</a></li>
+<li class="circle">model.api.<a href="model/api/PizzaStorageOut.html" class="type-name-link" title="interface in model.api">PizzaStorageOut</a></li>
 <li class="circle">config.<a href="config/PizzeriaConfigSource.html" class="type-name-link" title="interface in config">PizzeriaConfigSource</a></li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html" class="type-name-link external-link" title="class or interface in java.lang">Runnable</a>
 <ul>
-<li class="circle">model.<a href="model/Worker.html" class="type-name-link" title="interface in model">Worker</a></li>
+<li class="circle">model.api.<a href="model/api/Worker.html" class="type-name-link" title="interface in model.api">Worker</a></li>
 </ul>
 </li>
 </ul>
