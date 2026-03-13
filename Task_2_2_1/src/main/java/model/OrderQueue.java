@@ -17,7 +17,7 @@ public class OrderQueue implements OrdersInbox, OrdersOutbox {
             throw new IllegalStateException("Pizzeria is not accepting new orders");
         }
         orders.add(order);
-        notifyAll();
+        notify();
     }
 
     @Override
