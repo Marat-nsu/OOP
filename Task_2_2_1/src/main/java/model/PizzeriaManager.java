@@ -1,6 +1,10 @@
 package model;
 
 import java.util.List;
+import model.api.OrderStatusSink;
+import model.api.OrdersInbox;
+import model.api.PizzaStorageIn;
+import model.api.Worker;
 
 public class PizzeriaManager {
     private final OrdersInbox orderQueue;

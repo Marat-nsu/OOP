@@ -2,6 +2,8 @@ package model;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import model.api.PizzaStorageIn;
+import model.api.PizzaStorageOut;
 
 public class Warehouse implements PizzaStorageIn, PizzaStorageOut {
     private final int capacity;

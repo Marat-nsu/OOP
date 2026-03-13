@@ -2,6 +2,8 @@ package model;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import model.api.OrdersInbox;
+import model.api.OrdersOutbox;
 
 public class OrderQueue implements OrdersInbox, OrdersOutbox {
     private final Queue<PizzaOrder> orders;

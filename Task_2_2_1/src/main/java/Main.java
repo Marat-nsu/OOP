@@ -2,8 +2,8 @@ import config.PizzeriaConfig;
 import config.PizzeriaConfigLoader;
 import config.PizzeriaConfigSource;
 import model.ConsoleOrderStatusSink;
-import model.OrderStatusSink;
 import model.PizzeriaManager;
+import model.api.OrderStatusSink;
 
 public class Main {
     public static void main(String[] args) {

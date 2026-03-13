@@ -1,15 +1,15 @@
 import config.PizzeriaConfig;
 import java.util.ArrayList;
 import java.util.List;
-import model.DelayStrategy;
 import model.OrderQueue;
-import model.OrderStatusSink;
 import model.PizzeriaManager;
 import model.PizzaBaker;
 import model.PizzaCourier;
 import model.ThreadSleepDelay;
 import model.Warehouse;
-import model.Worker;
+import model.api.DelayStrategy;
+import model.api.OrderStatusSink;
+import model.api.Worker;
 
 public class PizzeriaFactory {
     public PizzeriaManager create(PizzeriaConfig config, OrderStatusSink statusSink) {

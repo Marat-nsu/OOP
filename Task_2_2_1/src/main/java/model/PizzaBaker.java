@@ -1,5 +1,11 @@
 package model;
 
+import model.api.DelayStrategy;
+import model.api.OrderStatusSink;
+import model.api.OrdersOutbox;
+import model.api.PizzaStorageIn;
+import model.api.Worker;
+
 public class PizzaBaker implements Worker {
     private final int id;
     private final int bakingSpeed; // Time (in ms) to bake one pizza
