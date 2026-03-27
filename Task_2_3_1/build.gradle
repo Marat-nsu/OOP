@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 repositories {
@@ -12,15 +13,19 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
-	
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
+
+javafx {
+    version = '21'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
 test {
     useJUnitPlatform()
 }
 
 application {
-    mainClass = 'Main'
+    mainClass = 'snake.Main'
 }
 
 jacocoTestReport {
