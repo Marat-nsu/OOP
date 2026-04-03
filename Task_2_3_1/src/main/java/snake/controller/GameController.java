@@ -5,15 +5,11 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import snake.model.Cell;
 import snake.model.Direction;
-import snake.model.Food;
 import snake.model.GameConfig;
 import snake.model.GameEngine;
 import snake.model.GameStatus;
@@ -63,7 +59,9 @@ public class GameController {
     }
 
     private void setupTimeline(int millis) {
-        if (timeline != null) timeline.stop();
+        if (timeline != null) {
+            timeline.stop();
+        }
         timeline = new Timeline(new KeyFrame(Duration.millis(millis), event -> onTick()));
         timeline.setCycleCount(Timeline.INDEFINITE);
     }

@@ -1,10 +1,14 @@
 package snake.controller;
 
-import snake.model.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import snake.model.Cell;
+import snake.model.Direction;
+import snake.model.Food;
+import snake.model.GameEngine;
+import snake.model.RobotSnake;
+
 
 public class RobotController {
 
