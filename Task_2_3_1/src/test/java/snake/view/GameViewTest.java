@@ -13,6 +13,8 @@ public class GameViewTest {
         try {
             Platform.startup(() -> {});
         } catch (IllegalStateException e) {
+        } catch (UnsupportedOperationException e) {
+            org.junit.jupiter.api.Assumptions.assumeTrue(false, "Skipping GUI test on headless environment.");
         }
     }
 
