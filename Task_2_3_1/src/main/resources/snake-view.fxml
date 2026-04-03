@@ -16,6 +16,7 @@
         <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #0b1220; -fx-padding: 14;">
             <Label text="Snake" style="-fx-text-fill: #e2e8f0; -fx-font-size: 20px; -fx-font-weight: 700;"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="levelLabel" text="Level: 1" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px; -fx-font-weight: 600;"/>
             <Label fx:id="scoreLabel" text="Length: 1 / 20" style="-fx-text-fill: #cbd5e1; -fx-font-size: 14px;"/>
             <Label fx:id="statusLabel" text="Ready" style="-fx-text-fill: #93c5fd; -fx-font-size: 14px;"/>
             <Button text="Start" onAction="#onStartClicked" style="-fx-background-color: #22c55e; -fx-text-fill: #052e16; -fx-font-weight: 700;"/>
