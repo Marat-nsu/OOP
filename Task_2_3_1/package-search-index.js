@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"snake"},{"l":"snake.app"},{"l":"snake.controller"},{"l":"snake.model"},{"l":"snake.view"}];updateSearchResults();
