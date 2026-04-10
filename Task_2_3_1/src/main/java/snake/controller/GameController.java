@@ -35,8 +35,8 @@ public class GameController {
     private LevelManager levelManager;
     private RobotController robotController;
     private Timeline timeline;
+    private boolean running;
     private boolean tickInProgress;
-    private boolean tickRequested;
 
 
     public void bindScene(Scene scene) {
@@ -66,12 +66,16 @@ public class GameController {
         }
         timeline = new Timeline(new KeyFrame(Duration.millis(millis), event -> onTick()));
         timeline.setCycleCount(Timeline.INDEFINITE);
+        if (running) {
+            timeline.play();
+        }
     }
 
     @FXML
     private void onStartClicked() {
         if (engine.getStatus() == GameStatus.READY) {
             engine.start();
+            running = true;
             timeline.play();
             updateStatus();
         }
@@ -79,6 +83,7 @@ public class GameController {
 
     @FXML
     private void onRestartClicked() {
+        running = false;
         timeline.stop();
         levelManager.reset();
         GameConfig config = levelManager.getCurrentLevel();
@@ -106,27 +111,11 @@ public class GameController {
         if (direction != null) {
             if (engine.getStatus() == GameStatus.READY) {
                 engine.start();
+                running = true;
                 timeline.play();
             }
             engine.changeDirection(direction);
             event.consume();
-        }
-    }
-
-    private void onTick() {
-        if (tickInProgress) {
-            tickRequested = true;
-            return;
-        }
-
-        tickInProgress = true;
-        try {
-            do {
-                tickRequested = false;
-                processTick();
-            } while (tickRequested);
-        } finally {
-            tickInProgress = false;
         }
     }
 
@@ -143,13 +132,33 @@ public class GameController {
                 engine.setVictoryCondition(new LengthVictoryCondition(nextConfig.getWinLength()));
                 engine.reset();
                 setupTimeline(nextConfig.getTickMillis());
+                running = true;
                 view.fullRedraw(engine);
                 updateStatus();
             } else {
+                running = false;
                 timeline.stop();
             }
         } else if (engine.getStatus() == GameStatus.LOST) {
+            running = false;
             timeline.stop();
+        }
+    }
+
+    private void onTick() {
+        if (!running || tickInProgress) {
+            return;
+        }
+
+        tickInProgress = true;
+        timeline.stop();
+        try {
+            processTick();
+        } finally {
+            tickInProgress = false;
+            if (running) {
+                timeline.play();
+            }
         }
     }
 
