@@ -35,6 +35,8 @@ public class GameController {
     private LevelManager levelManager;
     private RobotController robotController;
     private Timeline timeline;
+    private boolean tickInProgress;
+    private boolean tickRequested;
 
 
     public void bindScene(Scene scene) {
@@ -112,6 +114,23 @@ public class GameController {
     }
 
     private void onTick() {
+        if (tickInProgress) {
+            tickRequested = true;
+            return;
+        }
+
+        tickInProgress = true;
+        try {
+            do {
+                tickRequested = false;
+                processTick();
+            } while (tickRequested);
+        } finally {
+            tickInProgress = false;
+        }
+    }
+
+    private void processTick() {
         robotController.update(engine);
         engine.step();
         view.update(engine);
