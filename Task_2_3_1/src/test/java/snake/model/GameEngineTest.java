@@ -13,7 +13,7 @@ public class GameEngineTest {
 
     @Test
     public void testMoveCollisionWithWall() {
-        GameConfig config = new GameConfig(5, 5, 0, 10, 500); 
+        GameConfig config = new GameConfig(5, 5, 0, 0, 0, 10, 500);
         GameEngine engine = new GameEngine(config, new LengthVictoryCondition(10));
         cleanEngine(engine);
         engine.start();
@@ -31,7 +31,7 @@ public class GameEngineTest {
 
     @Test
     public void testEatFoodAndWin() {
-        GameConfig config = new GameConfig(10, 10, 1, 2, 500); 
+        GameConfig config = new GameConfig(10, 10, 1, 0, 0, 2, 500);
         GameEngine engine = new GameEngine(config, new LengthVictoryCondition(2));
         cleanEngine(engine);
         engine.start();
@@ -48,7 +48,7 @@ public class GameEngineTest {
 
     @Test
     public void testLevelTransitionResetsSnake() {
-        GameConfig config = new GameConfig(10, 10, 1, 5, 100);
+        GameConfig config = new GameConfig(10, 10, 1, 0, 0, 5, 100);
         GameEngine engine = new GameEngine(config, new LengthVictoryCondition(5));
         engine.clearObstacles();
         engine.clearRobotSnakes();
@@ -59,7 +59,7 @@ public class GameEngineTest {
         snake.move(new Cell(1, 2), 1);
         assertEquals(3, snake.length());
         
-        GameConfig config2 = new GameConfig(10, 10, 1, 10, 50);
+        GameConfig config2 = new GameConfig(10, 10, 1, 0, 0, 10, 50);
         engine.setConfig(config2);
         engine.reset();
         
@@ -69,7 +69,7 @@ public class GameEngineTest {
 
     @Test
     public void testMoveCollisionWithObstacle() {
-        GameConfig config = new GameConfig(10, 10, 0, 10, 500);
+        GameConfig config = new GameConfig(10, 10, 0, 0, 0, 10, 500);
         GameEngine engine = new GameEngine(config, new LengthVictoryCondition(10));
         cleanEngine(engine);
         engine.start();
@@ -80,5 +80,63 @@ public class GameEngineTest {
         
         engine.step();
         assertEquals(GameStatus.LOST, engine.getStatus(), "Should hit obstacle at " + obstaclePosition);
+    }
+
+    @Test
+    public void testSelfCollisionLeadsToLoss() {
+        GameConfig config = new GameConfig(10, 10, 0, 0, 0, 10, 500);
+        GameEngine engine = new GameEngine(config, new LengthVictoryCondition(10));
+        cleanEngine(engine);
+
+        Snake snake = engine.getSnake();
+        snake.move(new Cell(5, 6), 1);
+        snake.move(new Cell(5, 7), 1);
+        snake.move(new Cell(6, 7), 1);
+        snake.move(new Cell(6, 6), 1);
+
+        engine.start();
+        engine.changeDirection(Direction.UP);
+        engine.step();
+
+        assertEquals(GameStatus.LOST, engine.getStatus(), "Should lose when moving into own body");
+    }
+
+    @Test
+    public void testOppositeDirectionIsIgnoredForLongSnake() {
+        GameConfig config = new GameConfig(10, 10, 0, 0, 0, 10, 500);
+        GameEngine engine = new GameEngine(config, new LengthVictoryCondition(10));
+        cleanEngine(engine);
+
+        Snake snake = engine.getSnake();
+        snake.move(new Cell(5, 6), 1);
+
+        engine.start();
+        engine.changeDirection(Direction.LEFT);
+        engine.step();
+
+        assertEquals(new Cell(5, 7), engine.getSnake().getHead(), "Opposite turn should be ignored");
+        assertEquals(GameStatus.RUNNING, engine.getStatus());
+    }
+
+    @Test
+    public void testVictoryTriggeredOnlyAtTargetLength() {
+        GameConfig config = new GameConfig(10, 10, 0, 0, 0, 3, 500);
+        GameEngine engine = new GameEngine(config, new LengthVictoryCondition(3));
+        cleanEngine(engine);
+        engine.start();
+
+        Cell firstFood = engine.getSnake().getHead().move(Direction.RIGHT);
+        engine.addFood(new Food(firstFood, FoodType.BASIC));
+        engine.step();
+
+        assertEquals(2, engine.getSnake().length());
+        assertEquals(GameStatus.RUNNING, engine.getStatus(), "Should still be running before target length");
+
+        Cell secondFood = engine.getSnake().getHead().move(Direction.RIGHT);
+        engine.addFood(new Food(secondFood, FoodType.BASIC));
+        engine.step();
+
+        assertEquals(3, engine.getSnake().length());
+        assertEquals(GameStatus.WON, engine.getStatus(), "Should win exactly at target length");
     }
 }

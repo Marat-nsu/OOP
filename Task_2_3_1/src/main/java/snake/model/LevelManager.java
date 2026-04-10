@@ -1,6 +1,5 @@
 package snake.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LevelManager {
@@ -8,12 +7,7 @@ public class LevelManager {
     private int currentLevelIndex;
 
     public LevelManager() {
-        levels = new ArrayList<>();
-        levels.add(new GameConfig(20, 28, 3, 5, 200));
-        levels.add(new GameConfig(20, 28, 4, 10, 150));
-        levels.add(new GameConfig(20, 28, 6, 15, 100));
-        levels.add(new GameConfig(20, 28, 5, 20, 70));
-        
+        levels = new LevelConfigLoader().loadOrDefault();
         currentLevelIndex = 0;
     }
 

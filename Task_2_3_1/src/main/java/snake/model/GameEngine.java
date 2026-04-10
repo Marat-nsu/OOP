@@ -5,13 +5,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 public class GameEngine {
+    private static final int OBSTACLE_SAFETY_RADIUS = 1;
+
     private GameConfig config;
     private VictoryCondition victoryCondition;
-    private final Random random;
+    private final SpawnService spawnService;
 
     private Snake snake;
     private final List<RobotSnake> robotSnakes;
@@ -24,7 +25,7 @@ public class GameEngine {
     public GameEngine(GameConfig config, VictoryCondition victoryCondition) {
         this.config = config;
         this.victoryCondition = victoryCondition;
-        this.random = new Random();
+        this.spawnService = new SpawnService(new java.util.Random());
         this.obstacles = new HashSet<>();
         this.foods = new ArrayList<>();
         this.robotSnakes = new ArrayList<>();
@@ -38,7 +39,7 @@ public class GameEngine {
         pendingDirection = Direction.RIGHT;
         status = GameStatus.READY;
         obstacles.clear();
-        generateObstacles(18, new HashSet<>(Collections.singletonList(start)));
+        obstacles.addAll(spawnService.generateObstacles(config, config.getObstacleCount(), new HashSet<>(Collections.singletonList(start)), OBSTACLE_SAFETY_RADIUS));
         foods.clear();
         spawnFoodToTarget();
         robotSnakes.clear();
@@ -54,7 +55,7 @@ public class GameEngine {
             reserved.addAll(robot.getSegments());
         }
         
-        generateObstacles(18, reserved);
+        obstacles.addAll(spawnService.generateObstacles(config, config.getObstacleCount(), reserved, OBSTACLE_SAFETY_RADIUS));
         foods.clear();
         spawnFoodToTarget();
         
@@ -92,12 +93,7 @@ public class GameEngine {
         Food eaten = getFoodAt(nextHead);
         int growth = eaten == null ? 0 : eaten.getType().getGrowth();
 
-        boolean hitsSelf = snake.contains(nextHead);
-        if (hitsSelf && growth <= 0 && nextHead.equals(snake.getTail())) {
-            hitsSelf = false;
-        }
-
-        if (isOutOfBounds(nextHead) || obstacles.contains(nextHead) || hitsSelf || hitsOtherSnakes(nextHead, snake)) {
+        if (CollisionService.playerLoses(nextHead, growth, snake, obstacles, robotSnakes, config)) {
             status = GameStatus.LOST;
             return;
         }
@@ -114,15 +110,16 @@ public class GameEngine {
             Direction robotDir = robot.getPendingDirection();
             Cell robotNext = robot.getHead().move(robotDir);
             
-            if (isOutOfBounds(robotNext) || obstacles.contains(robotNext) || robot.contains(robotNext) 
-                || snake.contains(robotNext) || hitsOtherSnakes(robotNext, robot)) {
+            if (CollisionService.robotDies(robotNext, robot, snake, obstacles, robotSnakes, config)) {
                 it.remove();
                 continue;
             }
             
             Food robotEaten = getFoodAt(robotNext);
             int robotGrowth = robotEaten == null ? 0 : robotEaten.getType().getGrowth();
-            if (robotEaten != null) foods.remove(robotEaten);
+            if (robotEaten != null) {
+                foods.remove(robotEaten);
+            }
             
             robot.move(robotNext, robotGrowth);
         }
@@ -188,63 +185,13 @@ public class GameEngine {
     }
 
     private void spawnRobots() {
-        for (int i = 0; i < 2; i++) {
-            Cell pos = findFreeCell();
-            if (pos != null) {
-                robotSnakes.add(new RobotSnake(pos));
-            }
-        }
-    }
-
-    private Cell findFreeCell() {
-        for (int i = 0; i < 100; i++) {
-            Cell c = new Cell(random.nextInt(config.getRows()), random.nextInt(config.getCols()));
-            if (!isOccupied(c)) return c;
-        }
-        return null;
-    }
-
-    private boolean hitsOtherSnakes(Cell head, Snake self) {
-        if (self != snake && snake.contains(head)) return true;
-        for (RobotSnake other : robotSnakes) {
-            if (other != self && other.contains(head)) return true;
-        }
-        return false;
+        Set<Cell> occupied = BoardOccupancy.occupiedCells(snake, robotSnakes, obstacles, foods);
+        robotSnakes.addAll(spawnService.spawnRobots(config, config.getRobotCount(), occupied));
     }
 
     private void spawnFoodToTarget() {
-        int maxAttempts = config.getRows() * config.getCols() * 2;
-        int attempts = 0;
-        while (foods.size() < config.getFoodCount() && attempts < maxAttempts) {
-            attempts++;
-            Cell candidate = new Cell(random.nextInt(config.getRows()), random.nextInt(config.getCols()));
-            if (isOccupied(candidate)) {
-                continue;
-            }
-            foods.add(new Food(candidate, FoodType.BASIC));
-        }
-    }
-
-    private void generateObstacles(int count, Set<Cell> reservedCells) {
-        int attempts = 0;
-        int maxAttempts = config.getRows() * config.getCols() * 3;
-        while (obstacles.size() < count && attempts < maxAttempts) {
-            attempts++;
-            Cell candidate = new Cell(random.nextInt(config.getRows()), random.nextInt(config.getCols()));
-            
-            boolean tooClose = false;
-            for (Cell reserved : reservedCells) {
-                if (Math.abs(candidate.getRow() - reserved.getRow()) <= 1
-                    && Math.abs(candidate.getCol() - reserved.getCol()) <= 1) {
-                    tooClose = true;
-                    break;
-                }
-            }
-            if (tooClose) {
-                continue;
-            }
-            obstacles.add(candidate);
-        }
+        Set<Cell> occupied = BoardOccupancy.occupiedCells(snake, robotSnakes, obstacles, foods);
+        spawnService.fillFoodsToTarget(config, foods, occupied);
     }
 
     private Food getFoodAt(Cell cell) {
@@ -256,20 +203,4 @@ public class GameEngine {
         return null;
     }
 
-    private boolean isOutOfBounds(Cell cell) {
-        return cell.getRow() < 0 || cell.getRow() >= config.getRows() || cell.getCol() < 0 || cell.getCol() >= config.getCols();
-    }
-
-    private boolean isOccupied(Cell cell) {
-        if (snake.contains(cell) || obstacles.contains(cell)) {
-            return true;
-        }
-
-        for (Food food : foods) {
-            if (food.getPosition().equals(cell)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
