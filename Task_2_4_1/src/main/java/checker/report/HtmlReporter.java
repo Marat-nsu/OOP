@@ -85,7 +85,7 @@ public class HtmlReporter {
             for (String tid : taskIds) {
                 sb.append("<th>").append(esc(tid)).append("</th>");
             }
-            sb.append("<th>Сумма</th><th>Оценка</th></tr>\n");
+            sb.append("<th>Активность (нед.)</th><th>Бонус за активность</th><th>Сумма</th><th>Оценка</th></tr>\n");
 
             for (StudentConfig student : group.getStudents()) {
                 sb.append("<tr><td>").append(esc(student.getFullName())).append("</td>");
@@ -96,6 +96,13 @@ public class HtmlReporter {
                     sb.append("<td>").append(score).append("</td>");
                     total += score;
                 }
+                checker.engine.StudentActivity act = results.getActivity(student.getGithub());
+                String activityLabel = act.getTotalWeeks() > 0
+                    ? act.getActiveWeeks() + "/" + act.getTotalWeeks()
+                    : "—";
+                total += act.getActivityBonus();
+                sb.append("<td>").append(activityLabel).append("</td>");
+                sb.append("<td>").append(act.getActivityBonus()).append("</td>");
                 sb.append("<td>").append(total).append("</td>");
                 sb.append("<td>").append(config.getSettings().computeGrade(total)).append("</td>");
                 sb.append("</tr>\n");

@@ -13,6 +13,9 @@ class SettingsBuilder {
     void setWorkDir(String dir) { settings.workDir = dir }
     void setTestTimeoutSeconds(int seconds) { settings.testTimeoutSeconds = seconds }
     void setJavaHome(String path) { settings.javaHome = path }
+    void setCourseStartDate(String d) { settings.courseStartDate = d }
+    void setCourseEndDate(String d) { settings.courseEndDate = d }
+    void setMaxActivityBonus(int v) { settings.maxActivityBonus = v }
 
     void grade(Map<String, Object> props) {
         def t = new GradeThreshold()

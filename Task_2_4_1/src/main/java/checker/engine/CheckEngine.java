@@ -3,8 +3,9 @@ package checker.engine;
 import checker.model.*;
 import java.io.*;
 import java.nio.file.*;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.temporal.IsoFields;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +24,7 @@ public class CheckEngine {
     public CheckResults run() throws Exception {
         Files.createDirectories(workDir);
         CheckResults results = new CheckResults();
+        Set<String> analyzedStudents = new HashSet<>();
 
         for (CheckEntry check : config.getChecks()) {
             GroupConfig group = config.findGroup(check.getGroupName());
@@ -35,6 +37,12 @@ public class CheckEngine {
                 System.err.println("[" + student.getGithub() + "] Checking task " + task.getId());
                 StudentTaskResult result = checkStudentTask(student, task);
                 results.putResult(check.getGroupName(), task.getId(), student.getGithub(), result);
+
+                if (!analyzedStudents.contains(student.getGithub())) {
+                    analyzedStudents.add(student.getGithub());
+                    StudentActivity act = analyzeActivity(student);
+                    results.putActivity(student.getGithub(), act);
+                }
             }
         }
         return results;
@@ -75,6 +83,71 @@ public class CheckEngine {
             result.setErrorMessage(e.getMessage());
         }
         return result;
+    }
+
+    private StudentActivity analyzeActivity(StudentConfig student) {
+        Settings settings = config.getSettings();
+        String startStr = settings.getCourseStartDate();
+        String endStr   = settings.getCourseEndDate();
+        if (startStr == null || endStr == null || startStr.isBlank() || endStr.isBlank()) {
+            return StudentActivity.UNKNOWN;
+        }
+        LocalDate courseStart;
+        LocalDate courseEnd;
+        try {
+            courseStart = LocalDate.parse(startStr);
+            courseEnd   = LocalDate.parse(endStr);
+        } catch (Exception e) {
+            return StudentActivity.UNKNOWN;
+        }
+
+        Path repoPath = workDir.resolve(student.getGithub());
+        if (!Files.exists(repoPath.resolve(".git"))) {
+            return StudentActivity.UNKNOWN;
+        }
+
+        List<String> commitDates = new ArrayList<>();
+        try {
+            ProcessResult pr = runCommand(repoPath, 30,
+                "git", "log", "--format=%ad", "--date=short");
+            if (pr.exitCode() == 0) {
+                for (String line : pr.output().split("\n")) {
+                    if (!line.isBlank()) {
+                        commitDates.add(line.trim());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return StudentActivity.UNKNOWN;
+        }
+
+        Set<String> activeWeekKeys = new HashSet<>();
+        for (String dateStr : commitDates) {
+            try {
+                LocalDate date = LocalDate.parse(dateStr);
+                if (!date.isBefore(courseStart) && !date.isAfter(courseEnd)) {
+                    int year = date.get(IsoFields.WEEK_BASED_YEAR);
+                    int week = date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+                    activeWeekKeys.add(year + "-W" + week);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        Set<String> totalWeekKeys = new HashSet<>();
+        LocalDate d = courseStart;
+        while (!d.isAfter(courseEnd)) {
+            int year = d.get(IsoFields.WEEK_BASED_YEAR);
+            int week = d.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+            totalWeekKeys.add(year + "-W" + week);
+            d = d.plusWeeks(1);
+        }
+
+        int activeWeeks = activeWeekKeys.size();
+        int totalWeeks  = totalWeekKeys.size();
+        int maxBonus    = settings.getMaxActivityBonus();
+        int activityBonus = totalWeeks > 0 ? (maxBonus * activeWeeks / totalWeeks) : 0;
+
+        return new StudentActivity(activeWeeks, totalWeeks, activityBonus);
     }
 
     private Path cloneOrUpdateRepo(StudentConfig student) throws IOException, InterruptedException {

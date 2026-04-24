@@ -25,6 +25,7 @@ settings {
     testTimeoutSeconds = 300
     courseStartDate    = "2026-02-10"
     courseEndDate      = "2026-06-20"
+    maxActivityBonus   = 2
 
     grade(minScore: 3, value: "3")
     grade(minScore: 5, value: "4")

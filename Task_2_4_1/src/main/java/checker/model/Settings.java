@@ -13,6 +13,10 @@ public class Settings {
     private List<GradeThreshold> gradeThresholds = new ArrayList<>();
     /** studentGithub, taskId, bonus points. */
     private Map<String, Map<String, Integer>> bonusPoints = new HashMap<>();
+    private String courseStartDate = null;
+    private String courseEndDate = null;
+    /** Max bonus points awarded for 100% weekly activity. */
+    private int maxActivityBonus = 0;
 
     public String getWorkDir() {
         return workDir;
@@ -53,6 +57,15 @@ public class Settings {
     public int getBonusPoints(String studentGithub, String taskId) {
         return bonusPoints.getOrDefault(studentGithub, Map.of()).getOrDefault(taskId, 0);
     }
+
+    public String getCourseStartDate() { return courseStartDate; }
+    public void setCourseStartDate(String d) { this.courseStartDate = d; }
+
+    public String getCourseEndDate() { return courseEndDate; }
+    public void setCourseEndDate(String d) { this.courseEndDate = d; }
+
+    public int getMaxActivityBonus() { return maxActivityBonus; }
+    public void setMaxActivityBonus(int v) { this.maxActivityBonus = v; }
 
     public String computeGrade(int totalScore) {
         String grade = "-";
