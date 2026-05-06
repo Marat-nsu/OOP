@@ -2,7 +2,11 @@ package checker.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CourseConfig {
     private List<TaskConfig> tasks = new ArrayList<>();
     private List<GroupConfig> groups = new ArrayList<>();
@@ -10,44 +14,20 @@ public class CourseConfig {
     private List<CheckpointConfig> checkpoints = new ArrayList<>();
     private Settings settings = new Settings();
 
-    public List<TaskConfig> getTasks() {
-        return tasks;
-    }
-    
     public void addTask(TaskConfig task) {
         this.tasks.add(task);
     }
 
-    public List<GroupConfig> getGroups() {
-        return groups;
-    }
-    
     public void addGroup(GroupConfig group) {
         this.groups.add(group);
     }
 
-    public List<CheckEntry> getChecks() {
-        return checks;
-    }
-    
     public void addCheck(CheckEntry check) {
         this.checks.add(check);
     }
 
-    public List<CheckpointConfig> getCheckpoints() {
-        return checkpoints;
-    }
-
     public void addCheckpoint(CheckpointConfig checkpoint) {
         this.checkpoints.add(checkpoint);
-    }
-
-    public Settings getSettings() {
-        return settings;
-    }
-    
-    public void setSettings(Settings settings) {
-        this.settings = settings;
     }
 
     public TaskConfig findTask(String id) {

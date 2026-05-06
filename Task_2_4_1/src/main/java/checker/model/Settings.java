@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Settings {
     private String workDir = System.getProperty("java.io.tmpdir") + "/oop-checker";
     private int testTimeoutSeconds = 300;
@@ -17,35 +21,8 @@ public class Settings {
     private String courseEndDate = null;
     /** Max bonus points awarded for 100% weekly activity. */
     private int maxActivityBonus = 0;
+    private int repositoryDownloadParallelism = 4;
 
-    public String getWorkDir() {
-        return workDir;
-    }
-    
-    public void setWorkDir(String workDir) {
-        this.workDir = workDir;
-    }
-
-    public int getTestTimeoutSeconds() {
-        return testTimeoutSeconds;
-    }
-    
-    public void setTestTimeoutSeconds(int v) {
-        this.testTimeoutSeconds = v;
-    }
-
-    public String getJavaHome() {
-        return javaHome;
-    }
-    
-    public void setJavaHome(String javaHome) {
-        this.javaHome = javaHome;
-    }
-
-    public List<GradeThreshold> getGradeThresholds() {
-        return gradeThresholds;
-    }
-    
     public void addGradeThreshold(GradeThreshold t) {
         this.gradeThresholds.add(t);
     }
@@ -58,14 +35,9 @@ public class Settings {
         return bonusPoints.getOrDefault(studentGithub, Map.of()).getOrDefault(taskId, 0);
     }
 
-    public String getCourseStartDate() { return courseStartDate; }
-    public void setCourseStartDate(String d) { this.courseStartDate = d; }
-
-    public String getCourseEndDate() { return courseEndDate; }
-    public void setCourseEndDate(String d) { this.courseEndDate = d; }
-
-    public int getMaxActivityBonus() { return maxActivityBonus; }
-    public void setMaxActivityBonus(int v) { this.maxActivityBonus = v; }
+    public void setRepositoryDownloadParallelism(int v) {
+        this.repositoryDownloadParallelism = Math.max(1, v);
+    }
 
     public String computeGrade(int totalScore) {
         String grade = "-";

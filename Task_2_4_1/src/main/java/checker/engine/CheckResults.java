@@ -5,8 +5,9 @@ import java.util.Map;
 
 public class CheckResults {
     /** groupName, taskId, studentGithub, result. */
-    private final Map<String, Map<String, Map<String, StudentTaskResult>>> results = new LinkedHashMap<>();
-    /** studentGithub -> activity. */
+    private final Map<String, Map<String, Map<String, StudentTaskResult>>> results
+        = new LinkedHashMap<>();
+    /** studentGithub, activity. */
     private final Map<String, StudentActivity> activity = new LinkedHashMap<>();
 
     public void putResult(String groupName, String taskId, String studentGithub, StudentTaskResult result) {

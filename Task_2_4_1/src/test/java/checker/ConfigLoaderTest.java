@@ -3,6 +3,7 @@ package checker;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import checker.model.CourseConfig;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -45,5 +46,17 @@ class ConfigLoaderTest {
         assertEquals(1, config.getChecks().size());
         assertEquals(1, config.getCheckpoints().size());
         assertEquals("KT-1", config.getCheckpoints().get(0).getName());
+    }
+
+    @Test
+    void loadsRepositoryRootConfigWithRelativeIncludes() throws Exception {
+        File rootConfig = Path.of("oop.groovy").toFile();
+
+        CourseConfig config = ConfigLoader.load(rootConfig);
+
+        assertEquals(4, config.getTasks().size());
+        assertEquals(1, config.getGroups().size());
+        assertEquals(1, config.getChecks().size());
+        assertEquals(3, config.getCheckpoints().size());
     }
 }

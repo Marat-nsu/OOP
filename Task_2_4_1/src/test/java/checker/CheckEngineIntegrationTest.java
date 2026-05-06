@@ -101,9 +101,59 @@ class CheckEngineIntegrationTest {
         assertTrue(html.contains("<td>5</td>"));
     }
 
+    @Test
+    void downloadsAllCheckedRepositoriesBeforeRunningChecks() throws Exception {
+        Path firstRepo = tempDir.resolve("first-repo");
+        Path secondRepo = tempDir.resolve("second-repo");
+        createStudentRepository(firstRepo, 0, 0);
+        createStudentRepository(secondRepo, 0, 0);
+
+        Path configFile = tempDir.resolve("multi-oop.groovy");
+        Path workDir = tempDir.resolve("multi-work");
+        Files.writeString(configFile, """
+            tasks {
+                task(id: "2_4_1", name: "Checker", maxScore: 4,
+                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
+            }
+
+            groups {
+                group(name: "24214") {
+                    student(github: "first", name: "First Student", repo: "%s")
+                    student(github: "second", name: "Second Student", repo: "%s")
+                }
+            }
+
+            checks {
+                check(task: "2_4_1", group: "24214")
+            }
+
+            settings {
+                workDir = "%s"
+                repositoryDownloadParallelism = 2
+                courseStartDate = "2026-05-01"
+                courseEndDate = "2026-05-31"
+            }
+            """.formatted(firstRepo.toUri(), secondRepo.toUri(), workDir));
+
+        String html = Checker.check(ConfigLoader.load(configFile.toFile()));
+
+        assertTrue(Files.exists(workDir.resolve("first/.git")));
+        assertTrue(Files.exists(workDir.resolve("second/.git")));
+        assertTrue(html.contains("First Student"));
+        assertTrue(html.contains("Second Student"));
+    }
+
     private void createStudentRepository(Path repo, int failures, int skipped) throws Exception {
         Path taskDir = repo.resolve("Task_2_4_1");
         Files.createDirectories(taskDir);
+        Files.createDirectories(repo.resolve(".github"));
+        Files.writeString(repo.resolve(".github/google_checks.xml"), """
+            <?xml version="1.0"?>
+            <!DOCTYPE module PUBLIC
+                      "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+                      "https://checkstyle.org/dtds/configuration_1_3.dtd">
+            <module name="Checker"/>
+            """);
         Path gradlew = taskDir.resolve("gradlew");
         Files.writeString(gradlew, """
             #!/bin/sh

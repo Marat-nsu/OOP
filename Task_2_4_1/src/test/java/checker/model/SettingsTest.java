@@ -29,6 +29,15 @@ class SettingsTest {
         assertEquals(0, settings.getBonusPoints("other", "2_4_1"));
     }
 
+    @Test
+    void repositoryDownloadParallelismIsAtLeastOne() {
+        Settings settings = new Settings();
+
+        settings.setRepositoryDownloadParallelism(0);
+
+        assertEquals(1, settings.getRepositoryDownloadParallelism());
+    }
+
     private GradeThreshold threshold(int minScore, String grade) {
         GradeThreshold threshold = new GradeThreshold();
         threshold.setMinScore(minScore);
