@@ -6,7 +6,7 @@ import java.nio.file.*;
 import java.time.LocalDate;
 import java.time.temporal.IsoFields;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Element;
@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 public class CheckEngine {
     private final CourseConfig config;
     private final Path workDir;
+    private final Map<Path, Set<String>> gradleTasksCache = new HashMap<>();
 
     public CheckEngine(CourseConfig config) {
         this.config = config;
@@ -63,13 +64,34 @@ public class CheckEngine {
                 return result;
             }
 
-            String buildError = runBuild(taskDir);
-            result.setBuildSuccess(buildError == null);
-            if (buildError != null) {
-                result.setErrorMessage(buildError);
+            result.setSubmissionDate(lastTaskCommitDate(repoPath, "Task_" + task.getId()));
+
+            String compileError = runGradleTask(taskDir, "compileJava");
+            result.setBuildSuccess(compileError == null);
+            if (compileError != null) {
+                result.setErrorMessage(compileError);
                 return result;
             }
 
+            String docsError = runGradleTask(taskDir, "javadoc");
+            result.setDocsSuccess(docsError == null);
+            if (docsError != null) {
+                result.setErrorMessage(docsError);
+                return result;
+            }
+
+            String styleError = runGradleTask(taskDir, "checkstyleMain");
+            result.setStyleSuccess(styleError == null);
+            if (styleError != null) {
+                result.setErrorMessage(styleError);
+                return result;
+            }
+
+            deleteDirectory(taskDir.resolve("build/test-results"));
+            String testError = runGradleTask(taskDir, "test");
+            if (testError != null) {
+                result.setErrorMessage(testError);
+            }
             result.setTestCounts(parseTestResults(taskDir));
 
             int bonus = config.getSettings().getBonusPoints(student.getGithub(), task.getId());
@@ -77,7 +99,7 @@ public class CheckEngine {
 
             TestCounts tc = result.getTestCounts();
             if (tc.total() > 0 && tc.passed() > 0 && tc.failed() == 0) {
-                result.setBaseScore(task.getMaxScore());
+                result.setBaseScore(scoreWithDeadlines(task, result.getSubmissionDate()));
             }
         } catch (Exception e) {
             result.setErrorMessage(e.getMessage());
@@ -153,6 +175,7 @@ public class CheckEngine {
     private Path cloneOrUpdateRepo(StudentConfig student) throws IOException, InterruptedException {
         Path repoPath = workDir.resolve(student.getGithub());
         if (Files.exists(repoPath.resolve(".git"))) {
+            checkoutMainBranch(repoPath);
             runCommand(repoPath, 60, "git", "pull");
         } else {
             if (student.getRepoUrl() == null || student.getRepoUrl().isBlank()) {
@@ -162,6 +185,7 @@ public class CheckEngine {
             if (pr.exitCode() != 0) {
                 return null;
             }
+            checkoutMainBranch(repoPath);
         }
         makeGradlewExecutable(repoPath);
         return repoPath;
@@ -176,13 +200,84 @@ public class CheckEngine {
         }
     }
 
-    private String runBuild(Path taskDir) throws IOException, InterruptedException {
+    private void checkoutMainBranch(Path repoPath) throws IOException, InterruptedException {
+        if (runCommand(repoPath, 20, "git", "rev-parse", "--verify", "main").exitCode() == 0) {
+            runCommand(repoPath, 30, "git", "checkout", "main");
+        } else if (runCommand(repoPath, 20, "git", "rev-parse", "--verify", "master").exitCode() == 0) {
+            runCommand(repoPath, 30, "git", "checkout", "master");
+        }
+    }
+
+    private String runGradleTask(Path taskDir, String taskName) throws IOException, InterruptedException {
+        if (!gradleTaskExists(taskDir, taskName)) {
+            return "Gradle task not found: " + taskName;
+        }
         ProcessResult pr = runCommand(taskDir, config.getSettings().getTestTimeoutSeconds(),
-            gradleCmd(taskDir), "build");
+            gradleCmd(taskDir), taskName);
         if (pr.exitCode() == 0) {
             return null;
         }
         return extractBuildError(pr.output());
+    }
+
+    private boolean gradleTaskExists(Path taskDir, String taskName) throws IOException, InterruptedException {
+        Set<String> tasks = gradleTasksCache.get(taskDir);
+        if (tasks == null) {
+            ProcessResult pr = runCommand(taskDir, config.getSettings().getTestTimeoutSeconds(),
+                gradleCmd(taskDir), "tasks", "--all");
+            tasks = new HashSet<>();
+            if (pr.exitCode() == 0) {
+                for (String line : pr.output().split("\n")) {
+                    String trimmed = line.stripLeading();
+                    int separator = trimmed.indexOf(' ');
+                    String name = separator >= 0 ? trimmed.substring(0, separator) : trimmed;
+                    if (!name.isBlank()) {
+                        tasks.add(name);
+                    }
+                }
+            }
+            gradleTasksCache.put(taskDir, tasks);
+        }
+        return tasks.contains(taskName);
+    }
+
+    private String lastTaskCommitDate(Path repoPath, String taskPath) {
+        try {
+            ProcessResult pr = runCommand(repoPath, 30,
+                "git", "log", "-1", "--format=%ad", "--date=short", "--", taskPath);
+            return pr.exitCode() == 0 ? pr.output().strip() : "";
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private int scoreWithDeadlines(TaskConfig task, String submissionDate) {
+        if (submissionDate == null || submissionDate.isBlank()) {
+            return task.getMaxScore();
+        }
+        try {
+            LocalDate submitted = LocalDate.parse(submissionDate);
+            if (!task.getHardDeadline().isBlank()
+                && submitted.isAfter(LocalDate.parse(task.getHardDeadline()))) {
+                return 0;
+            }
+            if (!task.getSoftDeadline().isBlank()
+                && submitted.isAfter(LocalDate.parse(task.getSoftDeadline()))) {
+                return Math.max(1, task.getMaxScore() / 2);
+            }
+        } catch (Exception ignored) { }
+        return task.getMaxScore();
+    }
+
+    private void deleteDirectory(Path dir) throws IOException {
+        if (!Files.exists(dir)) {
+            return;
+        }
+        try (var stream = Files.walk(dir)) {
+            for (Path path : stream.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(path);
+            }
+        }
     }
 
     private TestCounts parseTestResults(Path taskDir) {
@@ -245,6 +340,7 @@ public class CheckEngine {
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(dir.toFile());
         pb.redirectErrorStream(true);
+        pb.environment().put("GIT_TERMINAL_PROMPT", "0");
 
         String javaHome = resolveJavaHome();
         if (javaHome != null) {
@@ -255,20 +351,37 @@ public class CheckEngine {
         }
 
         Process process = pb.start();
-        StringBuilder output = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
+        ExecutorService outputReader = Executors.newSingleThreadExecutor();
+        Future<String> outputFuture = outputReader.submit(() -> {
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
             }
-        }
+            return output.toString();
+        });
 
         boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
         if (!finished) {
             process.destroyForcibly();
-            return new ProcessResult(-1, output.toString(), false);
+            String output = readOutput(outputFuture);
+            outputReader.shutdownNow();
+            return new ProcessResult(-1, output, false);
         }
-        return new ProcessResult(process.exitValue(), output.toString(), true);
+        String output = readOutput(outputFuture);
+        outputReader.shutdownNow();
+        return new ProcessResult(process.exitValue(), output, true);
+    }
+
+    private String readOutput(Future<String> outputFuture) {
+        try {
+            return outputFuture.get(2, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private String gradleCmd(Path dir) {

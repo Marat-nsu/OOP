@@ -7,6 +7,7 @@ public class CourseConfig {
     private List<TaskConfig> tasks = new ArrayList<>();
     private List<GroupConfig> groups = new ArrayList<>();
     private List<CheckEntry> checks = new ArrayList<>();
+    private List<CheckpointConfig> checkpoints = new ArrayList<>();
     private Settings settings = new Settings();
 
     public List<TaskConfig> getTasks() {
@@ -31,6 +32,14 @@ public class CourseConfig {
     
     public void addCheck(CheckEntry check) {
         this.checks.add(check);
+    }
+
+    public List<CheckpointConfig> getCheckpoints() {
+        return checkpoints;
+    }
+
+    public void addCheckpoint(CheckpointConfig checkpoint) {
+        this.checkpoints.add(checkpoint);
     }
 
     public Settings getSettings() {

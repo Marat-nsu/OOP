@@ -4,6 +4,7 @@ import checker.engine.CheckResults;
 import checker.engine.StudentTaskResult;
 import checker.model.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class HtmlReporter {
@@ -55,7 +56,8 @@ public class HtmlReporter {
                 String taskName = task != null ? task.getName() : taskId;
                 sb.append("<h3>").append(esc(taskId)).append(" — ").append(esc(taskName)).append("</h3>\n");
                 sb.append("<table>\n");
-                sb.append("<tr><th>Студент</th><th>Сборка</th><th>Тесты (прошли/упали/пропущены)</th><th>Доп. балл</th><th>Балл</th></tr>\n");
+                sb.append("<tr><th>Студент</th><th>Компиляция</th><th>Документация</th><th>Google Style</th>")
+                  .append("<th>Тесты (прошли/упали/пропущены)</th><th>Сдача</th><th>Доп. балл</th><th>Балл</th></tr>\n");
 
                 for (StudentConfig student : group.getStudents()) {
                     StudentTaskResult r = results.getTaskResults(groupName, taskId).get(student.getGithub());
@@ -65,11 +67,16 @@ public class HtmlReporter {
                     sb.append("<tr>");
                     sb.append("<td>").append(esc(student.getFullName())).append("</td>");
                     if (r.getErrorMessage() != null) {
-                        sb.append("<td>").append(mark(false)).append("</td>");
-                        sb.append("<td colspan=\"3\" class=\"err\">").append(esc(r.getErrorMessage())).append("</td>");
+                        sb.append("<td>").append(mark(r.isBuildSuccess())).append("</td>");
+                        sb.append("<td>").append(mark(r.isDocsSuccess())).append("</td>");
+                        sb.append("<td>").append(mark(r.isStyleSuccess())).append("</td>");
+                        sb.append("<td colspan=\"4\" class=\"err\">").append(esc(r.getErrorMessage())).append("</td>");
                     } else {
                         sb.append("<td>").append(mark(r.isBuildSuccess())).append("</td>");
+                        sb.append("<td>").append(mark(r.isDocsSuccess())).append("</td>");
+                        sb.append("<td>").append(mark(r.isStyleSuccess())).append("</td>");
                         sb.append("<td>").append(esc(r.getTestCounts().toString())).append("</td>");
+                        sb.append("<td>").append(esc(blankAsDash(r.getSubmissionDate()))).append("</td>");
                         sb.append("<td>").append(r.getBonusScore()).append("</td>");
                         sb.append("<td>").append(r.getTotalScore()).append("</td>");
                     }
@@ -85,7 +92,10 @@ public class HtmlReporter {
             for (String tid : taskIds) {
                 sb.append("<th>").append(esc(tid)).append("</th>");
             }
-            sb.append("<th>Активность (нед.)</th><th>Бонус за активность</th><th>Сумма</th><th>Оценка</th></tr>\n");
+            for (CheckpointConfig cp : config.getCheckpoints()) {
+                sb.append("<th>").append(esc(cp.getName())).append("</th>");
+            }
+            sb.append("<th>Активность (нед.)</th><th>Бонус за активность</th><th>Сумма</th><th>Итоговая оценка</th></tr>\n");
 
             for (StudentConfig student : group.getStudents()) {
                 sb.append("<tr><td>").append(esc(student.getFullName())).append("</td>");
@@ -95,6 +105,10 @@ public class HtmlReporter {
                     int score = r != null ? r.getTotalScore() : 0;
                     sb.append("<td>").append(score).append("</td>");
                     total += score;
+                }
+                for (CheckpointConfig cp : config.getCheckpoints()) {
+                    int checkpointScore = checkpointScore(config, results, groupName, taskIds, student, cp);
+                    sb.append("<td>").append(config.getSettings().computeGrade(checkpointScore)).append("</td>");
                 }
                 checker.engine.StudentActivity act = results.getActivity(student.getGithub());
                 String activityLabel = act.getTotalWeeks() > 0
@@ -123,5 +137,37 @@ public class HtmlReporter {
             return "";
         }
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private String blankAsDash(String s) {
+        return s == null || s.isBlank() ? "-" : s;
+    }
+
+    private int checkpointScore(CourseConfig config, CheckResults results, String groupName,
+                                List<String> taskIds, StudentConfig student, CheckpointConfig cp) {
+        LocalDate checkpointDate;
+        try {
+            checkpointDate = LocalDate.parse(cp.getDate());
+        } catch (Exception e) {
+            return 0;
+        }
+
+        int score = 0;
+        for (String taskId : taskIds) {
+            TaskConfig task = config.findTask(taskId);
+            if (task == null || task.getHardDeadline().isBlank()) {
+                continue;
+            }
+            try {
+                if (LocalDate.parse(task.getHardDeadline()).isAfter(checkpointDate)) {
+                    continue;
+                }
+            } catch (Exception e) {
+                continue;
+            }
+            StudentTaskResult r = results.getTaskResults(groupName, taskId).get(student.getGithub());
+            score += r != null ? r.getTotalScore() : 0;
+        }
+        return score;
     }
 }

@@ -10,11 +10,20 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 public class ConfigLoader {
 
     public static CourseConfig load(File scriptFile) throws Exception {
+        CourseConfig config = new CourseConfig();
+        loadInto(scriptFile, config);
+        return config;
+    }
+
+    public static void loadInto(File scriptFile, CourseConfig config) throws Exception {
+        File absoluteScript = scriptFile.getCanonicalFile();
         CompilerConfiguration cc = new CompilerConfiguration();
         cc.setScriptBaseClass("checker.dsl.CourseScript");
-        GroovyShell shell = new GroovyShell(ConfigLoader.class.getClassLoader(), new Binding(), cc);
-        Script script = shell.parse(scriptFile);
+        Binding binding = new Binding();
+        binding.setVariable("__config", config);
+        binding.setVariable("__scriptDir", absoluteScript.getParentFile().getAbsolutePath());
+        GroovyShell shell = new GroovyShell(ConfigLoader.class.getClassLoader(), binding, cc);
+        Script script = shell.parse(absoluteScript);
         script.run();
-        return (CourseConfig) script.getClass().getMethod("getConfig").invoke(script);
     }
 }

@@ -2,9 +2,12 @@ package checker.engine;
 
 public class StudentTaskResult {
     private boolean buildSuccess = false;
+    private boolean docsSuccess = false;
+    private boolean styleSuccess = false;
     private TestCounts testCounts = TestCounts.ZERO;
     private int baseScore = 0;
     private int bonusScore = 0;
+    private String submissionDate = "";
     private String errorMessage = null;
 
     public boolean isBuildSuccess() {
@@ -13,6 +16,22 @@ public class StudentTaskResult {
     
     public void setBuildSuccess(boolean v) {
         this.buildSuccess = v;
+    }
+
+    public boolean isDocsSuccess() {
+        return docsSuccess;
+    }
+
+    public void setDocsSuccess(boolean v) {
+        this.docsSuccess = v;
+    }
+
+    public boolean isStyleSuccess() {
+        return styleSuccess;
+    }
+
+    public void setStyleSuccess(boolean v) {
+        this.styleSuccess = v;
     }
 
     public TestCounts getTestCounts() {
@@ -41,6 +60,14 @@ public class StudentTaskResult {
 
     public int getTotalScore() {
         return baseScore + bonusScore;
+    }
+
+    public String getSubmissionDate() {
+        return submissionDate;
+    }
+
+    public void setSubmissionDate(String v) {
+        this.submissionDate = v;
     }
 
     public String getErrorMessage() {
