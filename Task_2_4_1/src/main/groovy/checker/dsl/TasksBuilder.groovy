@@ -1,5 +1,6 @@
 package checker.dsl
 
+import checker.dsl.DslValidation
 import checker.model.CourseConfig
 import checker.model.TaskConfig
 
@@ -12,15 +13,11 @@ class TasksBuilder {
 
     void task(Map<String, Object> props) {
         def t = new TaskConfig()
-        if (props.id) {
-            t.id = props.id as String
-        }
+        t.id = DslValidation.requiredString(props.id, "task.id")
         if (props.name) {
             t.name = props.name as String
         }
-        if (props.maxScore != null) {
-            t.maxScore = props.maxScore as int
-        }
+        t.maxScore = DslValidation.requiredInt(props.maxScore, "task.maxScore")
         if (props.softDeadline) {
             t.softDeadline = props.softDeadline as String
         }
@@ -35,6 +32,7 @@ class TasksBuilder {
         cl.delegate = t
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl.call()
+        DslValidation.requiredString(t.id, "task.id")
         config.addTask(t)
     }
 }

@@ -1,5 +1,6 @@
 package checker.dsl
 
+import checker.dsl.DslValidation
 import checker.model.CourseConfig
 import checker.model.GroupConfig
 import checker.model.StudentConfig
@@ -13,7 +14,7 @@ class GroupsBuilder {
 
     void group(Map<String, Object> props = [:], Closure cl) {
         def g = new GroupConfig()
-        if (props.name) g.name = props.name as String
+        g.name = DslValidation.requiredString(props.name, "group.name")
 
         def studentAdder = new StudentAdder(g)
         cl.delegate = studentAdder
@@ -31,9 +32,7 @@ class GroupsBuilder {
 
         void student(Map<String, Object> props) {
             def s = new StudentConfig()
-            if (props.github) {
-                s.github = props.github as String
-            }
+            s.github = DslValidation.requiredString(props.github, "student.github")
             if (props.name) {
                 s.fullName = props.name as String
             }
@@ -54,6 +53,7 @@ class GroupsBuilder {
             cl.delegate = s
             cl.resolveStrategy = Closure.DELEGATE_FIRST
             cl.call()
+            DslValidation.requiredString(s.github, "student.github")
             group.addStudent(s)
         }
     }

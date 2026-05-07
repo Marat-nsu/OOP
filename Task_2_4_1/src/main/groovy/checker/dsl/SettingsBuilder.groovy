@@ -1,5 +1,6 @@
 package checker.dsl
 
+import checker.dsl.DslValidation
 import checker.model.GradeThreshold
 import checker.model.Settings
 
@@ -20,25 +21,22 @@ class SettingsBuilder {
 
     void grade(Map<String, Object> props) {
         def t = new GradeThreshold()
-        if (props.minScore != null) {
-            t.minScore = props.minScore as int
-        }
+        t.minScore = DslValidation.requiredInt(props.minScore, "grade.minScore")
         if (props.value) {
             t.grade = props.value as String
         }
         if (props.grade) {
             t.grade = props.grade as String
         }
+        DslValidation.requiredString(t.grade, "grade.value")
         settings.addGradeThreshold(t)
     }
 
     void bonus(Map<String, Object> props) {
-        if (props.student && props.task && props.points != null) {
-            settings.addBonusPoints(
-                props.student as String,
-                props.task as String,
-                props.points as int
-            )
-        }
+        settings.addBonusPoints(
+            DslValidation.requiredString(props.student, "bonus.student"),
+            DslValidation.requiredString(props.task, "bonus.task"),
+            DslValidation.requiredInt(props.points, "bonus.points")
+        )
     }
 }

@@ -1,5 +1,6 @@
 package checker.dsl
 
+import checker.dsl.DslValidation
 import checker.model.CheckpointConfig
 import checker.model.CourseConfig
 
@@ -18,6 +19,8 @@ class CheckpointsBuilder {
         if (props.date) {
             cp.date = props.date as String
         }
+        DslValidation.requiredString(cp.name, "checkpoint.name")
+        DslValidation.requiredString(cp.date, "checkpoint.date")
         config.addCheckpoint(cp)
     }
 
@@ -26,6 +29,8 @@ class CheckpointsBuilder {
         cl.delegate = cp
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl.call()
+        DslValidation.requiredString(cp.name, "checkpoint.name")
+        DslValidation.requiredString(cp.date, "checkpoint.date")
         config.addCheckpoint(cp)
     }
 }

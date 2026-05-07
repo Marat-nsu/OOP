@@ -1,5 +1,6 @@
 package checker.dsl
 
+import checker.dsl.DslValidation
 import checker.model.CheckEntry
 import checker.model.CourseConfig
 
@@ -24,6 +25,8 @@ class ChecksBuilder {
         if (props.groupName) {
             entry.groupName = props.groupName as String
         }
+        DslValidation.requiredString(entry.taskId, "check.task")
+        DslValidation.requiredString(entry.groupName, "check.group")
         config.addCheck(entry)
     }
 
@@ -32,6 +35,8 @@ class ChecksBuilder {
         cl.delegate = entry
         cl.resolveStrategy = Closure.DELEGATE_FIRST
         cl.call()
+        DslValidation.requiredString(entry.taskId, "check.task")
+        DslValidation.requiredString(entry.groupName, "check.group")
         config.addCheck(entry)
     }
 }
