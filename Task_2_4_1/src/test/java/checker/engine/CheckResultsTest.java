@@ -15,7 +15,7 @@ class CheckResultsTest {
         results.putResult("24214", "2_4_1", "student", taskResult);
 
         assertSame(taskResult, results.getTaskResults("24214", "2_4_1").get("student"));
-        assertEquals(2, results.getTaskResults("24214", "2_4_1").get("student").getTotalScore());
+        assertEquals(2.0, results.getTaskResults("24214", "2_4_1").get("student").getTotalScore());
     }
 
     @Test

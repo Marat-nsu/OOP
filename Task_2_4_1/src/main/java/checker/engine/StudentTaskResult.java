@@ -10,12 +10,12 @@ public class StudentTaskResult {
     private boolean docsSuccess = false;
     private boolean styleSuccess = false;
     private TestCounts testCounts = TestCounts.ZERO;
-    private int baseScore = 0;
-    private int bonusScore = 0;
+    private double baseScore = 0;
+    private double bonusScore = 0;
     private String submissionDate = "";
     private String errorMessage = null;
 
-    public int getTotalScore() {
+    public double getTotalScore() {
         return baseScore + bonusScore;
     }
 }

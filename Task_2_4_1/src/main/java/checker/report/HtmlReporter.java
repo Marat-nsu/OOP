@@ -36,8 +36,10 @@ public class HtmlReporter {
         Map<String, List<String>> groupToTasks = new LinkedHashMap<>();
         for (CheckEntry check : config.getChecks()) {
             checkedGroups.add(check.getGroupName());
-            groupToTasks.computeIfAbsent(check.getGroupName(), k -> new ArrayList<>())
-                        .add(check.getTaskId());
+            groupToTasks.computeIfAbsent(check.getGroupName(), k -> new ArrayList<>());
+            if (!groupToTasks.get(check.getGroupName()).contains(check.getTaskId())) {
+                groupToTasks.get(check.getGroupName()).add(check.getTaskId());
+            }
         }
 
         for (String groupName : checkedGroups) {
@@ -60,7 +62,7 @@ public class HtmlReporter {
                 sb.append("<tr><th>Студент</th><th>Компиляция</th><th>Документация</th><th>Google Style</th>")
                   .append("<th>Тесты (прошли/упали/пропущены)</th><th>Сдача</th><th>Доп. балл</th><th>Балл</th></tr>\n");
 
-                for (StudentConfig student : group.getStudents()) {
+                for (StudentConfig student : checkedStudentsForTask(config, group, taskId)) {
                     StudentTaskResult r = results.getTaskResults(groupName, taskId)
                         .get(student.getGithub());
                     if (r == null) {
@@ -82,8 +84,8 @@ public class HtmlReporter {
                         sb.append("<td>")
                             .append(esc(blankAsDash(r.getSubmissionDate())))
                             .append("</td>");
-                        sb.append("<td>").append(r.getBonusScore()).append("</td>");
-                        sb.append("<td>").append(r.getTotalScore()).append("</td>");
+                        sb.append("<td>").append(score(r.getBonusScore())).append("</td>");
+                        sb.append("<td>").append(score(r.getTotalScore())).append("</td>");
                     }
                     sb.append("</tr>\n");
                 }
@@ -102,18 +104,18 @@ public class HtmlReporter {
             }
             sb.append("<th>Активность (нед.)</th><th>Бонус за активность</th><th>Сумма</th><th>Итоговая оценка</th></tr>\n");
 
-            for (StudentConfig student : group.getStudents()) {
+            for (StudentConfig student : checkedStudentsForGroup(config, group)) {
                 sb.append("<tr><td>").append(esc(student.getFullName())).append("</td>");
-                int total = 0;
+                double total = 0;
                 for (String tid : taskIds) {
                     StudentTaskResult r = results.getTaskResults(groupName, tid)
                         .get(student.getGithub());
-                    int score = r != null ? r.getTotalScore() : 0;
-                    sb.append("<td>").append(score).append("</td>");
-                    total += score;
+                    double taskScore = r != null ? r.getTotalScore() : 0;
+                    sb.append("<td>").append(score(taskScore)).append("</td>");
+                    total += taskScore;
                 }
                 for (CheckpointConfig cp : config.getCheckpoints()) {
-                    int checkpointScore = checkpointScore(
+                    double checkpointScore = checkpointScore(
                         config,
                         results,
                         groupName,
@@ -130,8 +132,8 @@ public class HtmlReporter {
                     : "—";
                 total += act.getActivityBonus();
                 sb.append("<td>").append(activityLabel).append("</td>");
-                sb.append("<td>").append(act.getActivityBonus()).append("</td>");
-                sb.append("<td>").append(total).append("</td>");
+                sb.append("<td>").append(score(act.getActivityBonus())).append("</td>");
+                sb.append("<td>").append(score(total)).append("</td>");
                 sb.append("<td>").append(config.getSettings().computeGrade(total)).append("</td>");
                 sb.append("</tr>\n");
             }
@@ -146,6 +148,24 @@ public class HtmlReporter {
         return ok ? "<span class=\"pass\">+</span>" : "<span class=\"fail\">-</span>";
     }
 
+    private List<StudentConfig> checkedStudentsForTask(CourseConfig config, GroupConfig group,
+                                                       String taskId) {
+        return group.getStudents().stream()
+            .filter(student -> config.getChecks().stream()
+                .filter(check -> check.getGroupName().equals(group.getName()))
+                .filter(check -> check.getTaskId().equals(taskId))
+                .anyMatch(check -> check.includesStudent(student)))
+            .toList();
+    }
+
+    private List<StudentConfig> checkedStudentsForGroup(CourseConfig config, GroupConfig group) {
+        return group.getStudents().stream()
+            .filter(student -> config.getChecks().stream()
+                .filter(check -> check.getGroupName().equals(group.getName()))
+                .anyMatch(check -> check.includesStudent(student)))
+            .toList();
+    }
+
     private String esc(String s) {
         if (s == null) {
             return "";
@@ -157,7 +177,13 @@ public class HtmlReporter {
         return s == null || s.isBlank() ? "-" : s;
     }
 
-    private int checkpointScore(CourseConfig config, CheckResults results, String groupName,
+    private String score(double value) {
+        return value == Math.rint(value)
+            ? Long.toString(Math.round(value))
+            : Double.toString(value);
+    }
+
+    private double checkpointScore(CourseConfig config, CheckResults results, String groupName,
                                 List<String> taskIds, StudentConfig student, CheckpointConfig cp) {
         LocalDate checkpointDate;
         try {
@@ -166,7 +192,7 @@ public class HtmlReporter {
             return 0;
         }
 
-        int score = 0;
+        double score = 0;
         for (String taskId : taskIds) {
             TaskConfig task = config.findTask(taskId);
             if (task == null || task.getHardDeadline().isBlank()) {

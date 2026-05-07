@@ -1,6 +1,7 @@
 package checker.report;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import checker.engine.CheckResults;
 import checker.engine.StudentActivity;
@@ -41,6 +42,22 @@ class HtmlReporterTest {
         assertTrue(html.contains("КТ-1"));
         assertTrue(html.contains("Итоговая оценка"));
         assertTrue(html.contains("Student &lt;One&gt;"));
+    }
+
+    @Test
+    void omitsStudentsThatAreNotSelectedByCheckEntry() {
+        CourseConfig config = courseConfig();
+        StudentConfig skipped = new StudentConfig();
+        skipped.setGithub("skipped");
+        skipped.setFullName("Skipped Student");
+        config.findGroup("24214").addStudent(skipped);
+        config.getChecks().get(0).getStudentGithubs().add("student");
+
+        CheckResults results = new CheckResults();
+        String html = new HtmlReporter().generateHtml(config, results);
+
+        assertTrue(html.contains("Student &lt;One&gt;"));
+        assertFalse(html.contains("Skipped Student"));
     }
 
     private CourseConfig courseConfig() {

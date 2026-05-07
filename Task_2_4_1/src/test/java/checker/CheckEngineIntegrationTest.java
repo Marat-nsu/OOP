@@ -1,5 +1,6 @@
 package checker;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import checker.model.CourseConfig;
@@ -141,6 +142,47 @@ class CheckEngineIntegrationTest {
         assertTrue(Files.exists(workDir.resolve("second/.git")));
         assertTrue(html.contains("First Student"));
         assertTrue(html.contains("Second Student"));
+    }
+
+    @Test
+    void checksOnlySelectedStudentsFromGroup() throws Exception {
+        Path selectedRepo = tempDir.resolve("selected-repo");
+        Path skippedRepo = tempDir.resolve("skipped-repo");
+        createStudentRepository(selectedRepo, 0, 0);
+        createStudentRepository(skippedRepo, 0, 0);
+
+        Path configFile = tempDir.resolve("selected-oop.groovy");
+        Path workDir = tempDir.resolve("selected-work");
+        Files.writeString(configFile, """
+            tasks {
+                task(id: "2_4_1", name: "Checker", maxScore: 4,
+                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
+            }
+
+            groups {
+                group(name: "24214") {
+                    student(github: "selected", name: "Selected Student", repo: "%s")
+                    student(github: "skipped", name: "Skipped Student", repo: "%s")
+                }
+            }
+
+            checks {
+                check(task: "2_4_1", group: "24214", students: ["selected"])
+            }
+
+            settings {
+                workDir = "%s"
+                courseStartDate = "2026-05-01"
+                courseEndDate = "2026-05-31"
+            }
+            """.formatted(selectedRepo.toUri(), skippedRepo.toUri(), workDir));
+
+        String html = Checker.check(ConfigLoader.load(configFile.toFile()));
+
+        assertTrue(Files.exists(workDir.resolve("selected/.git")));
+        assertFalse(Files.exists(workDir.resolve("skipped/.git")));
+        assertTrue(html.contains("Selected Student"));
+        assertFalse(html.contains("Skipped Student"));
     }
 
     private void createStudentRepository(Path repo, int failures, int skipped) throws Exception {

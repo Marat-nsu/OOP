@@ -53,6 +53,22 @@ class RepositoryManager {
         return repositories;
     }
 
+    void verifyGitClient() {
+        try {
+            ProcessResult result = commands.run(workDir, 10, "git", "--version");
+            if (result.exitCode() != 0) {
+                throw new IllegalStateException(
+                    "Console git client is not available: " + result.output().strip()
+                );
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Console git client is not available", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Console git client check was interrupted", e);
+        }
+    }
+
     String lastCommitDate(Path repoPath, String taskPath) {
         try {
             ProcessResult pr = commands.run(repoPath, 30,

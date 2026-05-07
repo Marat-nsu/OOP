@@ -16,7 +16,7 @@ class StudentTaskResultTest {
         assertFalse(result.isDocsSuccess());
         assertFalse(result.isStyleSuccess());
         assertEquals(TestCounts.ZERO, result.getTestCounts());
-        assertEquals(0, result.getTotalScore());
+        assertEquals(0.0, result.getTotalScore());
         assertNull(result.getErrorMessage());
     }
 
@@ -29,7 +29,7 @@ class StudentTaskResultTest {
         result.setDocsSuccess(true);
         result.setStyleSuccess(true);
 
-        assertEquals(5, result.getTotalScore());
+        assertEquals(5.0, result.getTotalScore());
         assertTrue(result.isBuildSuccess());
         assertTrue(result.isDocsSuccess());
         assertTrue(result.isStyleSuccess());

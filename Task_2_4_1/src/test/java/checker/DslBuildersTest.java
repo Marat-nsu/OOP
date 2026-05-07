@@ -112,7 +112,7 @@ class DslBuildersTest {
 
             checks {
                 check(taskId: "2_1_1", groupName: "24214")
-                check(task: "2_1_1", group: "24214")
+                check(task: "2_1_1", group: "24214", students: ["full", "short"])
             }
             """);
 
@@ -127,6 +127,8 @@ class DslBuildersTest {
         assertEquals("24214", config.getChecks().get(0).getGroupName());
         assertEquals("2_1_1", config.getChecks().get(1).getTaskId());
         assertEquals("24214", config.getChecks().get(1).getGroupName());
+        assertEquals(2, config.getChecks().get(1).getStudentGithubs().size());
+        assertEquals("full", config.getChecks().get(1).getStudentGithubs().get(0));
     }
 
     @Test

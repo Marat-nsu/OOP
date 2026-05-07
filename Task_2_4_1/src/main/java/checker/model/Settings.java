@@ -39,7 +39,7 @@ public class Settings {
         this.repositoryDownloadParallelism = Math.max(1, v);
     }
 
-    public String computeGrade(int totalScore) {
+    public String computeGrade(double totalScore) {
         String grade = "-";
         for (GradeThreshold t : gradeThresholds) {
             if (totalScore >= t.getMinScore()) {

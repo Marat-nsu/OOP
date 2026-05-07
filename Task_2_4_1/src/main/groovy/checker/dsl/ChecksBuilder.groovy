@@ -25,6 +25,12 @@ class ChecksBuilder {
         if (props.groupName) {
             entry.groupName = props.groupName as String
         }
+        if (props.student) {
+            entry.studentGithubs.add(props.student as String)
+        }
+        if (props.students) {
+            entry.studentGithubs.addAll((props.students as Collection).collect { it as String })
+        }
         DslValidation.requiredString(entry.taskId, "check.task")
         DslValidation.requiredString(entry.groupName, "check.group")
         config.addCheck(entry)

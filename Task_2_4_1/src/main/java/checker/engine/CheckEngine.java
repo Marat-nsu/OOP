@@ -42,6 +42,7 @@ public class CheckEngine {
 
     public CheckResults run() throws Exception {
         Files.createDirectories(workDir);
+        repositories.verifyGitClient();
         CheckResults results = new CheckResults();
         Map<String, RepositoryCheckout> checkouts = repositories.checkoutAll(
             checkedStudents().values(),
@@ -56,7 +57,7 @@ public class CheckEngine {
                 continue;
             }
 
-            for (StudentConfig student : group.getStudents()) {
+            for (StudentConfig student : checkedGroupStudents(check, group)) {
                 log.info("[" + student.getGithub() + "] Checking task " + task.getId());
                 StudentTaskResult result = checkStudentTask(
                     student,
@@ -82,10 +83,18 @@ public class CheckEngine {
                 continue;
             }
             for (StudentConfig student : group.getStudents()) {
-                students.putIfAbsent(student.getGithub(), student);
+                if (check.includesStudent(student)) {
+                    students.putIfAbsent(student.getGithub(), student);
+                }
             }
         }
         return students;
+    }
+
+    private Iterable<StudentConfig> checkedGroupStudents(CheckEntry check, GroupConfig group) {
+        return group.getStudents().stream()
+            .filter(check::includesStudent)
+            .toList();
     }
 
     private StudentTaskResult checkStudentTask(StudentConfig student, TaskConfig task,
