@@ -54,9 +54,10 @@ class ConfigLoaderTest {
 
         CourseConfig config = ConfigLoader.load(rootConfig);
 
-        assertEquals(4, config.getTasks().size());
+        assertEquals(2, config.getTasks().size());
         assertEquals(1, config.getGroups().size());
-        assertEquals(1, config.getChecks().size());
+        assertEquals(4, config.getGroups().get(0).getStudents().size());
+        assertEquals(2, config.getChecks().size());
         assertEquals(3, config.getCheckpoints().size());
     }
 }

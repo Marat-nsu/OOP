@@ -17,6 +17,7 @@ class StudentTaskResultTest {
         assertFalse(result.isStyleSuccess());
         assertEquals(TestCounts.ZERO, result.getTestCounts());
         assertEquals(0.0, result.getTotalScore());
+        assertEquals("", result.getLastSubmissionDate());
         assertNull(result.getErrorMessage());
     }
 

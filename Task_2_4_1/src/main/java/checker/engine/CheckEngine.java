@@ -112,7 +112,9 @@ public class CheckEngine {
                 return result;
             }
 
-            result.setSubmissionDate(repositories.lastCommitDate(repoPath, "Task_" + task.getId()));
+            String taskPath = "Task_" + task.getId();
+            result.setSubmissionDate(repositories.firstCommitDate(repoPath, taskPath));
+            result.setLastSubmissionDate(repositories.lastCommitDate(repoPath, taskPath));
             if (!runPreTestChecks(repoPath, taskDir, result)) {
                 return result;
             }
@@ -175,7 +177,11 @@ public class CheckEngine {
         TestCounts tc = result.getTestCounts();
         if (tc.total() > 0 && tc.passed() > 0 && tc.failed() == 0) {
             result.setBaseScore(
-                scoreCalculator.scoreWithDeadlines(task, result.getSubmissionDate())
+                scoreCalculator.scoreWithDeadlines(
+                    task,
+                    result.getSubmissionDate(),
+                    result.getLastSubmissionDate()
+                )
             );
         }
     }

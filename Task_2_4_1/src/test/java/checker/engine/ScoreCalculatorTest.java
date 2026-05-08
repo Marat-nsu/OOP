@@ -10,17 +10,22 @@ class ScoreCalculatorTest {
 
     @Test
     void givesFullScoreBeforeSoftDeadline() {
-        assertEquals(2.0, calculator.scoreWithDeadlines(task(), "2026-02-14"));
+        assertEquals(2.0, calculator.scoreWithDeadlines(task(), "2026-02-14", "2026-02-14"));
     }
 
     @Test
     void subtractsHalfPointWhenOnlySoftDeadlineFailed() {
-        assertEquals(1.5, calculator.scoreWithDeadlines(task(), "2026-02-20"));
+        assertEquals(1.5, calculator.scoreWithDeadlines(task(), "2026-02-20", "2026-02-20"));
+    }
+
+    @Test
+    void subtractsHalfPointWhenOnlyHardDeadlineFailed() {
+        assertEquals(1.5, calculator.scoreWithDeadlines(task(), "2026-02-14", "2026-02-22"));
     }
 
     @Test
     void returnsZeroWhenBothDeadlinesFailed() {
-        assertEquals(0.0, calculator.scoreWithDeadlines(task(), "2026-02-22"));
+        assertEquals(0.0, calculator.scoreWithDeadlines(task(), "2026-02-20", "2026-02-22"));
     }
 
     private TaskConfig task() {

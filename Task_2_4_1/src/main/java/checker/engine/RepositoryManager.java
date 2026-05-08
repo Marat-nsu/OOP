@@ -70,10 +70,27 @@ class RepositoryManager {
     }
 
     String lastCommitDate(Path repoPath, String taskPath) {
+        return commitDate(repoPath, taskPath, false);
+    }
+
+    String firstCommitDate(Path repoPath, String taskPath) {
+        return commitDate(repoPath, taskPath, true);
+    }
+
+    private String commitDate(Path repoPath, String taskPath, boolean first) {
         try {
+            String order = first ? "--reverse" : "-1";
             ProcessResult pr = commands.run(repoPath, 30,
-                "git", "log", "-1", "--format=%ad", "--date=short", "--", taskPath);
-            return pr.exitCode() == 0 ? pr.output().strip() : "";
+                "git", "log", order, "--no-merges", "--format=%ad", "--date=short",
+                "--", taskPath);
+            if (pr.exitCode() != 0) {
+                return "";
+            }
+            String output = pr.output().strip();
+            if (output.isBlank()) {
+                return "";
+            }
+            return output.lines().findFirst().orElse("");
         } catch (Exception e) {
             return "";
         }

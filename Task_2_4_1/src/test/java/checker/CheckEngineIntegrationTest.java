@@ -103,6 +103,40 @@ class CheckEngineIntegrationTest {
     }
 
     @Test
+    void softDeadlineUsesFirstCommitAndHardDeadlineUsesLastCommit() throws Exception {
+        Path sourceRepo = tempDir.resolve("deadline-repo");
+        createStudentRepositoryWithTwoTaskCommits(sourceRepo);
+
+        Path configFile = tempDir.resolve("deadline-oop.groovy");
+        Path workDir = tempDir.resolve("deadline-work");
+        Files.writeString(configFile, """
+            tasks {
+                task(id: "2_4_1", name: "Checker", maxScore: 4,
+                     softDeadline: "2026-02-14", hardDeadline: "2026-02-21")
+            }
+
+            groups {
+                group(name: "24214") {
+                    student(github: "student", name: "Student Name", repo: "%s")
+                }
+            }
+
+            checks {
+                check(task: "2_4_1", group: "24214")
+            }
+
+            settings {
+                workDir = "%s"
+            }
+            """.formatted(sourceRepo.toUri(), workDir));
+
+        String html = Checker.check(ConfigLoader.load(configFile.toFile()));
+
+        assertTrue(html.contains("2026-02-10..2026-02-22"));
+        assertTrue(html.contains("<td>3.5</td>"));
+    }
+
+    @Test
     void downloadsAllCheckedRepositoriesBeforeRunningChecks() throws Exception {
         Path firstRepo = tempDir.resolve("first-repo");
         Path secondRepo = tempDir.resolve("second-repo");
@@ -236,6 +270,18 @@ class CheckEngineIntegrationTest {
         run(repo, "git", "add", ".");
         run(repo, "git", "-c", "user.name=Test User", "-c", "user.email=test@example.com",
             "commit", "-m", "Initial task");
+    }
+
+    private void createStudentRepositoryWithTwoTaskCommits(Path repo) throws Exception {
+        createStudentRepository(repo, 0, 0);
+        run(repo, "git", "-c", "user.name=Test User", "-c", "user.email=test@example.com",
+            "commit", "--amend", "--no-edit",
+            "--date", "2026-02-10T12:00:00+07:00");
+
+        Files.writeString(repo.resolve("Task_2_4_1/README.md"), "updated task\n");
+        run(repo, "git", "add", ".");
+        run(repo, "git", "-c", "user.name=Test User", "-c", "user.email=test@example.com",
+            "commit", "--date", "2026-02-22T12:00:00+07:00", "-m", "Update task");
     }
 
     private void run(Path dir, String... command) throws IOException, InterruptedException {

@@ -3,6 +3,7 @@ include "groups.groovy"
 
 checks {
     check(task: "2_1_1", group: "24214")
+    check(task: "2_1_2", group: "24214")
 }
 
 checkpoints {

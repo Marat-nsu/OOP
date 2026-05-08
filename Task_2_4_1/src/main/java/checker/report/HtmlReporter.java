@@ -82,7 +82,7 @@ public class HtmlReporter {
                         sb.append("<td>").append(mark(r.isStyleSuccess())).append("</td>");
                         sb.append("<td>").append(esc(r.getTestCounts().toString())).append("</td>");
                         sb.append("<td>")
-                            .append(esc(blankAsDash(r.getSubmissionDate())))
+                            .append(esc(submissionLabel(r)))
                             .append("</td>");
                         sb.append("<td>").append(score(r.getBonusScore())).append("</td>");
                         sb.append("<td>").append(score(r.getTotalScore())).append("</td>");
@@ -175,6 +175,15 @@ public class HtmlReporter {
 
     private String blankAsDash(String s) {
         return s == null || s.isBlank() ? "-" : s;
+    }
+
+    private String submissionLabel(StudentTaskResult result) {
+        String first = result.getSubmissionDate();
+        String last = result.getLastSubmissionDate();
+        if (last == null || last.isBlank() || last.equals(first)) {
+            return blankAsDash(first);
+        }
+        return blankAsDash(first) + ".." + last;
     }
 
     private String score(double value) {

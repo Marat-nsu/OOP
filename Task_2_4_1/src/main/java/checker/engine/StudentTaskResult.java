@@ -13,6 +13,7 @@ public class StudentTaskResult {
     private double baseScore = 0;
     private double bonusScore = 0;
     private String submissionDate = "";
+    private String lastSubmissionDate = "";
     private String errorMessage = null;
 
     public double getTotalScore() {

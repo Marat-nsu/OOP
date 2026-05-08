@@ -4,16 +4,16 @@ import checker.model.TaskConfig;
 import java.time.LocalDate;
 
 class ScoreCalculator {
-    double scoreWithDeadlines(TaskConfig task, String submissionDate) {
-        if (submissionDate == null || submissionDate.isBlank()) {
+    double scoreWithDeadlines(TaskConfig task, String firstCommitDate, String lastCommitDate) {
+        if (firstCommitDate == null || firstCommitDate.isBlank()) {
             return task.getMaxScore();
         }
         try {
-            LocalDate submitted = LocalDate.parse(submissionDate);
             boolean softFailed = !task.getSoftDeadline().isBlank()
-                && submitted.isAfter(LocalDate.parse(task.getSoftDeadline()));
+                && LocalDate.parse(firstCommitDate).isAfter(LocalDate.parse(task.getSoftDeadline()));
             boolean hardFailed = !task.getHardDeadline().isBlank()
-                && submitted.isAfter(LocalDate.parse(task.getHardDeadline()));
+                && hardDeadlineDate(lastCommitDate, firstCommitDate)
+                    .isAfter(LocalDate.parse(task.getHardDeadline()));
             if (softFailed && hardFailed) {
                 return 0;
             }
@@ -22,5 +22,12 @@ class ScoreCalculator {
             }
         } catch (Exception ignored) { }
         return task.getMaxScore();
+    }
+
+    private LocalDate hardDeadlineDate(String lastCommitDate, String fallbackDate) {
+        String date = lastCommitDate == null || lastCommitDate.isBlank()
+            ? fallbackDate
+            : lastCommitDate;
+        return LocalDate.parse(date);
     }
 }
