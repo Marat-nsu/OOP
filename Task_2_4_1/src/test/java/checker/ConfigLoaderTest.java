@@ -50,7 +50,7 @@ class ConfigLoaderTest {
 
     @Test
     void loadsRepositoryRootConfigWithRelativeIncludes() throws Exception {
-        File rootConfig = Path.of("oop.groovy").toFile();
+        File rootConfig = Path.of("example", "oop.groovy").toFile();
 
         CourseConfig config = ConfigLoader.load(rootConfig);
 
