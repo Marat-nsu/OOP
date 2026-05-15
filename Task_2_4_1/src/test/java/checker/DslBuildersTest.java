@@ -11,6 +11,9 @@ import checker.model.CourseConfig;
 import checker.model.GroupConfig;
 import checker.model.StudentConfig;
 import checker.model.TaskConfig;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -22,47 +25,7 @@ class DslBuildersTest {
 
     @Test
     void loadsMapAndClosureFormsForAllTopLevelBlocks() throws Exception {
-        Path script = tempDir.resolve("oop.groovy");
-        Files.writeString(script, """
-            tasks {
-                task(id: "2_1_1", name: "Map Task", maxScore: 1,
-                     softDeadline: "2026-02-14", hardDeadline: "2026-02-21")
-                task {
-                    id = "2_2_1"
-                    name = "Closure Task"
-                    maxScore = 3
-                    softDeadline = "2026-03-07"
-                    hardDeadline = "2026-03-14"
-                }
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "mapStudent", name: "Map Student", repo: "https://example.com/map.git")
-                    student {
-                        github = "closureStudent"
-                        fullName = "Closure Student"
-                        repoUrl = "https://example.com/closure.git"
-                    }
-                }
-            }
-
-            checks {
-                check(task: "2_1_1", group: "24214")
-                check {
-                    taskId = "2_2_1"
-                    groupName = "24214"
-                }
-            }
-
-            checkpoints {
-                checkpoint(name: "KT-1", date: "2026-03-01")
-                checkpoint {
-                    name = "KT-2"
-                    date = "2026-04-01"
-                }
-            }
-            """);
+        Path script = writeScript("all-top-level-blocks.groovy");
 
         CourseConfig config = ConfigLoader.load(script.toFile());
 
@@ -97,24 +60,7 @@ class DslBuildersTest {
 
     @Test
     void supportsStudentAndCheckPropertyAliases() throws Exception {
-        Path script = tempDir.resolve("aliases.groovy");
-        Files.writeString(script, """
-            tasks {
-                task(id: "2_1_1", name: "Task", maxScore: 1)
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "full", fullName: "Full Name", repoUrl: "https://example.com/full.git")
-                    student(github: "short", name: "Short Name", repo: "https://example.com/short.git")
-                }
-            }
-
-            checks {
-                check(taskId: "2_1_1", groupName: "24214")
-                check(task: "2_1_1", group: "24214", students: ["full", "short"])
-            }
-            """);
+        Path script = writeScript("aliases.groovy");
 
         CourseConfig config = ConfigLoader.load(script.toFile());
 
@@ -133,22 +79,7 @@ class DslBuildersTest {
 
     @Test
     void loadsAllSettingsAndBonusDslMethods() throws Exception {
-        Path script = tempDir.resolve("settings.groovy");
-        Files.writeString(script, """
-            settings {
-                workDir = "/tmp/oop-test"
-                testTimeoutSeconds = 42
-                javaHome = "/tmp/java"
-                courseStartDate = "2026-02-10"
-                courseEndDate = "2026-06-20"
-                maxActivityBonus = 5
-                repositoryDownloadParallelism = 0
-
-                grade(minScore: 3, value: "satisfactory")
-                grade(minScore: 5, grade: "good")
-                bonus(student: "student", task: "2_1_1", points: 2)
-            }
-            """);
+        Path script = writeScript("settings-and-bonus.groovy");
 
         CourseConfig config = ConfigLoader.load(script.toFile());
 
@@ -159,6 +90,7 @@ class DslBuildersTest {
         assertEquals("2026-06-20", config.getSettings().getCourseEndDate());
         assertEquals(5, config.getSettings().getMaxActivityBonus());
         assertEquals(1, config.getSettings().getRepositoryDownloadParallelism());
+        assertEquals(3, config.getSettings().getTaskCheckThreadCount());
         assertEquals("satisfactory", config.getSettings().computeGrade(3));
         assertEquals("good", config.getSettings().computeGrade(5));
         assertEquals(2, config.getSettings().getBonusPoints("student", "2_1_1"));
@@ -168,15 +100,8 @@ class DslBuildersTest {
     void importConfigAliasResolvesRelativeToImportingScript() throws Exception {
         Path nested = tempDir.resolve("nested");
         Files.createDirectories(nested);
-        Files.writeString(nested.resolve("common.groovy"), """
-            tasks {
-                task(id: "2_1_1", name: "Imported Task", maxScore: 1)
-            }
-            """);
-        Path root = nested.resolve("oop.groovy");
-        Files.writeString(root, """
-            importConfig "common.groovy"
-            """);
+        writeScript("import/common.groovy", nested.resolve("common.groovy"));
+        Path root = writeScript("import/root.groovy", nested.resolve("oop.groovy"));
 
         CourseConfig config = ConfigLoader.load(root.toFile());
 
@@ -186,12 +111,7 @@ class DslBuildersTest {
 
     @Test
     void reportsMissingRequiredFieldAsDslException() throws Exception {
-        Path script = tempDir.resolve("invalid-task.groovy");
-        Files.writeString(script, """
-            tasks {
-                task(name: "Task without id", maxScore: 1)
-            }
-            """);
+        Path script = writeScript("invalid-task.groovy");
 
         DslConfigException ex = assertThrows(
             DslConfigException.class,
@@ -203,11 +123,7 @@ class DslBuildersTest {
 
     @Test
     void reportsUnknownDslMethodAsDslException() throws Exception {
-        Path script = tempDir.resolve("unknown-method.groovy");
-        Files.writeString(script, """
-            unknownBlock {
-            }
-            """);
+        Path script = writeScript("unknown-method.groovy");
 
         DslConfigException ex = assertThrows(
             DslConfigException.class,
@@ -220,10 +136,7 @@ class DslBuildersTest {
 
     @Test
     void reportsMissingIncludedFileAsDslException() throws Exception {
-        Path script = tempDir.resolve("missing-include.groovy");
-        Files.writeString(script, """
-            include "missing.groovy"
-            """);
+        Path script = writeScript("missing-include.groovy");
 
         DslConfigException ex = assertThrows(
             DslConfigException.class,
@@ -232,5 +145,20 @@ class DslBuildersTest {
 
         assertTrue(ex.getMessage().contains("DSL config file not found"));
         assertTrue(ex.getMessage().contains("missing.groovy"));
+    }
+
+    private Path writeScript(String resourceName) throws IOException {
+        return writeScript(resourceName, tempDir.resolve(Path.of(resourceName).getFileName()));
+    }
+
+    private Path writeScript(String resourceName, Path target) throws IOException {
+        String resourcePath = "/checker/dsl/" + resourceName;
+        try (InputStream input = getClass().getResourceAsStream(resourcePath)) {
+            if (input == null) {
+                throw new AssertionError("Missing test resource: " + resourcePath);
+            }
+            Files.writeString(target, new String(input.readAllBytes(), StandardCharsets.UTF_8));
+            return target;
+        }
     }
 }

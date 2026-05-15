@@ -24,21 +24,22 @@ class RepositoryManager {
         this.log = log;
     }
 
-    Map<String, RepositoryCheckout> checkoutAll(Collection<StudentConfig> students, int parallelism)
+    Map<String, RepositoryCheckout> checkoutAll(Collection<StudentConfig> students,
+                                                int repositoryDownloadParallelism)
             throws InterruptedException {
         if (students.isEmpty()) {
             return Map.of();
         }
 
-        int threads = Math.min(students.size(), parallelism);
+        int threads = Math.min(students.size(), repositoryDownloadParallelism);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         Map<String, Future<RepositoryCheckout>> futures = new LinkedHashMap<>();
         for (StudentConfig student : students) {
             futures.put(student.getGithub(), executor.submit(() -> checkout(student)));
         }
 
-        Map<String, RepositoryCheckout> repositories = new LinkedHashMap<>();
         try {
+            Map<String, RepositoryCheckout> repositories = new LinkedHashMap<>();
             for (Map.Entry<String, Future<RepositoryCheckout>> entry : futures.entrySet()) {
                 try {
                     repositories.put(entry.getKey(), entry.getValue().get());
@@ -47,10 +48,10 @@ class RepositoryManager {
                         new RepositoryCheckout(null, e.getCause().getMessage()));
                 }
             }
+            return repositories;
         } finally {
             executor.shutdownNow();
         }
-        return repositories;
     }
 
     void verifyGitClient() {

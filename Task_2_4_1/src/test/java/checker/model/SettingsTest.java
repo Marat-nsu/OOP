@@ -38,6 +38,15 @@ class SettingsTest {
         assertEquals(1, settings.getRepositoryDownloadParallelism());
     }
 
+    @Test
+    void taskCheckThreadCountIsAtLeastOne() {
+        Settings settings = new Settings();
+
+        settings.setTaskCheckThreadCount(0);
+
+        assertEquals(1, settings.getTaskCheckThreadCount());
+    }
+
     private GradeThreshold threshold(int minScore, String grade) {
         GradeThreshold threshold = new GradeThreshold();
         threshold.setMinScore(minScore);

@@ -18,6 +18,7 @@ class SettingsBuilder {
     void setCourseEndDate(String d) { settings.courseEndDate = d }
     void setMaxActivityBonus(int v) { settings.maxActivityBonus = v }
     void setRepositoryDownloadParallelism(int v) { settings.repositoryDownloadParallelism = v }
+    void setTaskCheckThreadCount(int v) { settings.taskCheckThreadCount = v }
 
     void grade(Map<String, Object> props) {
         def t = new GradeThreshold()

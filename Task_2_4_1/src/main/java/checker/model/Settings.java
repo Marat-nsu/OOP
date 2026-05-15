@@ -22,6 +22,7 @@ public class Settings {
     /** Max bonus points awarded for 100% weekly activity. */
     private int maxActivityBonus = 0;
     private int repositoryDownloadParallelism = 4;
+    private int taskCheckThreadCount = Runtime.getRuntime().availableProcessors();
 
     public void addGradeThreshold(GradeThreshold t) {
         this.gradeThresholds.add(t);
@@ -37,6 +38,10 @@ public class Settings {
 
     public void setRepositoryDownloadParallelism(int v) {
         this.repositoryDownloadParallelism = Math.max(1, v);
+    }
+
+    public void setTaskCheckThreadCount(int v) {
+        this.taskCheckThreadCount = Math.max(1, v);
     }
 
     public String computeGrade(double totalScore) {

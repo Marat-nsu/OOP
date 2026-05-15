@@ -8,10 +8,16 @@ import checker.model.StudentConfig;
 import checker.model.TaskConfig;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class CheckEngine {
     private final CourseConfig config;
@@ -48,8 +54,30 @@ public class CheckEngine {
             checkedStudents().values(),
             config.getSettings().getRepositoryDownloadParallelism()
         );
-        Set<String> analyzedStudents = new HashSet<>();
 
+        List<CheckJob> checkJobs = collectCheckJobs();
+        for (CheckJobResult jobResult : runCheckJobs(checkJobs, checkouts)) {
+            CheckJob job = jobResult.job();
+            results.putResult(
+                job.groupName(),
+                job.task().getId(),
+                job.student().getGithub(),
+                jobResult.studentTaskResult()
+            );
+        }
+
+        Set<String> analyzedStudents = new HashSet<>();
+        for (CheckJob job : checkJobs) {
+            StudentConfig student = job.student();
+            if (analyzedStudents.add(student.getGithub())) {
+                results.putActivity(student.getGithub(), activityAnalyzer.analyze(student));
+            }
+        }
+        return results;
+    }
+
+    private List<CheckJob> collectCheckJobs() {
+        List<CheckJob> checkJobs = new ArrayList<>();
         for (CheckEntry check : config.getChecks()) {
             GroupConfig group = config.findGroup(check.getGroupName());
             TaskConfig task = config.findTask(check.getTaskId());
@@ -58,20 +86,53 @@ public class CheckEngine {
             }
 
             for (StudentConfig student : checkedGroupStudents(check, group)) {
+                checkJobs.add(new CheckJob(check.getGroupName(), task, student));
+            }
+        }
+        return checkJobs;
+    }
+
+    private List<CheckJobResult> runCheckJobs(
+            List<CheckJob> checkJobs,
+            Map<String, RepositoryCheckout> checkouts
+    ) throws InterruptedException {
+        if (checkJobs.isEmpty()) {
+            return List.of();
+        }
+
+        int threads = Math.min(
+            checkJobs.size(),
+            config.getSettings().getTaskCheckThreadCount()
+        );
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        List<Future<CheckJobResult>> futures = new ArrayList<>();
+        for (CheckJob job : checkJobs) {
+            futures.add(executor.submit(() -> {
+                StudentConfig student = job.student();
+                TaskConfig task = job.task();
                 log.info("[" + student.getGithub() + "] Checking task " + task.getId());
                 StudentTaskResult result = checkStudentTask(
                     student,
                     task,
                     checkouts.get(student.getGithub())
                 );
-                results.putResult(check.getGroupName(), task.getId(), student.getGithub(), result);
+                return new CheckJobResult(job, result);
+            }));
+        }
 
-                if (analyzedStudents.add(student.getGithub())) {
-                    results.putActivity(student.getGithub(), activityAnalyzer.analyze(student));
+        try {
+            List<CheckJobResult> jobResults = new ArrayList<>();
+            for (Future<CheckJobResult> future : futures) {
+                try {
+                    jobResults.add(future.get());
+                } catch (ExecutionException e) {
+                    throw new IllegalStateException("Task check failed", e.getCause());
                 }
             }
+            return jobResults;
+        } finally {
+            executor.shutdownNow();
         }
-        return results;
     }
 
     private Map<String, StudentConfig> checkedStudents() {
@@ -185,4 +246,11 @@ public class CheckEngine {
             );
         }
     }
+
+    private record CheckJob(String groupName, TaskConfig task, StudentConfig student) {
+    }
+
+    private record CheckJobResult(CheckJob job, StudentTaskResult studentTaskResult) {
+    }
+
 }

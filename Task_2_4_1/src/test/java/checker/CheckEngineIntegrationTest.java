@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import checker.model.CourseConfig;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -19,36 +21,12 @@ class CheckEngineIntegrationTest {
         Path sourceRepo = tempDir.resolve("source-repo");
         createStudentRepository(sourceRepo, 1, 1);
 
-        Path configFile = tempDir.resolve("oop.groovy");
         Path workDir = tempDir.resolve("work");
-        Files.writeString(configFile, """
-            tasks {
-                task(id: "2_4_1", name: "Checker", maxScore: 4,
-                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "student", name: "Student Name", repo: "%s")
-                }
-            }
-
-            checks {
-                check(task: "2_4_1", group: "24214")
-            }
-
-            checkpoints {
-                checkpoint(name: "Final", date: "2026-12-31")
-            }
-
-            settings {
-                workDir = "%s"
-                courseStartDate = "2026-01-01"
-                courseEndDate = "2026-12-31"
-                maxActivityBonus = 4
-                grade(minScore: 4, value: "5")
-            }
-            """.formatted(sourceRepo.toUri(), workDir));
+        Path configFile = writeConfig(
+            "checks-local-repository.groovy",
+            sourceRepo.toUri(),
+            workDir
+        );
 
         CourseConfig config = ConfigLoader.load(configFile.toFile());
         String html = Checker.check(config);
@@ -68,32 +46,8 @@ class CheckEngineIntegrationTest {
         Path sourceRepo = tempDir.resolve("passing-repo");
         createStudentRepository(sourceRepo, 0, 0);
 
-        Path configFile = tempDir.resolve("passing-oop.groovy");
         Path workDir = tempDir.resolve("passing-work");
-        Files.writeString(configFile, """
-            tasks {
-                task(id: "2_4_1", name: "Checker", maxScore: 4,
-                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "student", name: "Student Name", repo: "%s")
-                }
-            }
-
-            checks {
-                check(task: "2_4_1", group: "24214")
-            }
-
-            settings {
-                workDir = "%s"
-                courseStartDate = "2026-05-01"
-                courseEndDate = "2026-05-31"
-                maxActivityBonus = 4
-                grade(minScore: 4, value: "5")
-            }
-            """.formatted(sourceRepo.toUri(), workDir));
+        Path configFile = writeConfig("passing-checks.groovy", sourceRepo.toUri(), workDir);
 
         CourseConfig config = ConfigLoader.load(configFile.toFile());
         String html = Checker.check(config);
@@ -107,28 +61,8 @@ class CheckEngineIntegrationTest {
         Path sourceRepo = tempDir.resolve("deadline-repo");
         createStudentRepositoryWithTwoTaskCommits(sourceRepo);
 
-        Path configFile = tempDir.resolve("deadline-oop.groovy");
         Path workDir = tempDir.resolve("deadline-work");
-        Files.writeString(configFile, """
-            tasks {
-                task(id: "2_4_1", name: "Checker", maxScore: 4,
-                     softDeadline: "2026-02-14", hardDeadline: "2026-02-21")
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "student", name: "Student Name", repo: "%s")
-                }
-            }
-
-            checks {
-                check(task: "2_4_1", group: "24214")
-            }
-
-            settings {
-                workDir = "%s"
-            }
-            """.formatted(sourceRepo.toUri(), workDir));
+        Path configFile = writeConfig("deadline-checks.groovy", sourceRepo.toUri(), workDir);
 
         String html = Checker.check(ConfigLoader.load(configFile.toFile()));
 
@@ -143,32 +77,13 @@ class CheckEngineIntegrationTest {
         createStudentRepository(firstRepo, 0, 0);
         createStudentRepository(secondRepo, 0, 0);
 
-        Path configFile = tempDir.resolve("multi-oop.groovy");
         Path workDir = tempDir.resolve("multi-work");
-        Files.writeString(configFile, """
-            tasks {
-                task(id: "2_4_1", name: "Checker", maxScore: 4,
-                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "first", name: "First Student", repo: "%s")
-                    student(github: "second", name: "Second Student", repo: "%s")
-                }
-            }
-
-            checks {
-                check(task: "2_4_1", group: "24214")
-            }
-
-            settings {
-                workDir = "%s"
-                repositoryDownloadParallelism = 2
-                courseStartDate = "2026-05-01"
-                courseEndDate = "2026-05-31"
-            }
-            """.formatted(firstRepo.toUri(), secondRepo.toUri(), workDir));
+        Path configFile = writeConfig(
+            "multiple-repositories.groovy",
+            firstRepo.toUri(),
+            secondRepo.toUri(),
+            workDir
+        );
 
         String html = Checker.check(ConfigLoader.load(configFile.toFile()));
 
@@ -185,31 +100,13 @@ class CheckEngineIntegrationTest {
         createStudentRepository(selectedRepo, 0, 0);
         createStudentRepository(skippedRepo, 0, 0);
 
-        Path configFile = tempDir.resolve("selected-oop.groovy");
         Path workDir = tempDir.resolve("selected-work");
-        Files.writeString(configFile, """
-            tasks {
-                task(id: "2_4_1", name: "Checker", maxScore: 4,
-                     softDeadline: "2026-12-30", hardDeadline: "2026-12-31")
-            }
-
-            groups {
-                group(name: "24214") {
-                    student(github: "selected", name: "Selected Student", repo: "%s")
-                    student(github: "skipped", name: "Skipped Student", repo: "%s")
-                }
-            }
-
-            checks {
-                check(task: "2_4_1", group: "24214", students: ["selected"])
-            }
-
-            settings {
-                workDir = "%s"
-                courseStartDate = "2026-05-01"
-                courseEndDate = "2026-05-31"
-            }
-            """.formatted(selectedRepo.toUri(), skippedRepo.toUri(), workDir));
+        Path configFile = writeConfig(
+            "selected-students.groovy",
+            selectedRepo.toUri(),
+            skippedRepo.toUri(),
+            workDir
+        );
 
         String html = Checker.check(ConfigLoader.load(configFile.toFile()));
 
@@ -217,6 +114,19 @@ class CheckEngineIntegrationTest {
         assertFalse(Files.exists(workDir.resolve("skipped/.git")));
         assertTrue(html.contains("Selected Student"));
         assertFalse(html.contains("Skipped Student"));
+    }
+
+    private Path writeConfig(String resourceName, Object... args) throws IOException {
+        String resourcePath = "/checker/integration/" + resourceName;
+        try (InputStream input = getClass().getResourceAsStream(resourcePath)) {
+            if (input == null) {
+                throw new AssertionError("Missing test resource: " + resourcePath);
+            }
+            Path configFile = tempDir.resolve(resourceName);
+            String template = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            Files.writeString(configFile, template.formatted(args));
+            return configFile;
+        }
     }
 
     private void createStudentRepository(Path repo, int failures, int skipped) throws Exception {
