@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	compileOnly 'org.projectlombok:lombok:1.18.44'
+	annotationProcessor 'org.projectlombok:lombok:1.18.44'
+	testCompileOnly 'org.projectlombok:lombok:1.18.44'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.44'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.0'
+}
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClass = 'Main'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    'Main.class',
+            ])
+        }))
+    }
+}
