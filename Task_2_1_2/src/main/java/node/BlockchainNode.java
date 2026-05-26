@@ -10,22 +10,18 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import network.Message;
-import network.MessageType;
-import network.PeerClient;
-import network.PeerServer;
-import storage.BlockStorage;
 import lombok.Getter;
+import network.PeerClient;
+import storage.BlockStorage;
 
 public class BlockchainNode implements AutoCloseable {
     private final String nodeId;
     @Getter
     private final Blockchain blockchain;
-    private final List<Peer> peers = Collections.synchronizedList(new ArrayList<>());
     private final List<String> rejectionLog = Collections.synchronizedList(new ArrayList<>());
     private final BlockStorage storage;
-    private final PeerClient peerClient = new PeerClient();
-    private PeerServer peerServer;
+    private final BlockBroadcaster blockBroadcaster;
+    private BlockServer blockServer;
 
     public BlockchainNode(String nodeId, int port, int[] numbers) {
         this(nodeId, port, numbers, null);
@@ -35,6 +31,7 @@ public class BlockchainNode implements AutoCloseable {
         this.nodeId = nodeId;
         this.blockchain = new Blockchain(numbers);
         this.storage = storagePath == null ? null : new BlockStorage(storagePath);
+        this.blockBroadcaster = new BlockBroadcaster(new PeerClient(), rejectionLog::add);
         restoreBlocks();
         if (port >= 0) {
             startServer(port);
@@ -42,7 +39,7 @@ public class BlockchainNode implements AutoCloseable {
     }
 
     public void addPeer(String host, int port) {
-        peers.add(new Peer(host, port));
+        blockBroadcaster.addPeer(host, port);
     }
 
     public void mineUntilFinished() {
@@ -61,7 +58,7 @@ public class BlockchainNode implements AutoCloseable {
         BlockValidationResult validation = blockchain.addBlock(block);
         if (validation.isAccepted()) {
             store(block);
-            broadcast(block);
+            blockBroadcaster.broadcast(block);
             return block;
         }
         rejectionLog.add(block.getHash() + ":" + validation.getReason());
@@ -84,28 +81,18 @@ public class BlockchainNode implements AutoCloseable {
     }
 
     public int getPort() {
-        return peerServer == null ? 0 : peerServer.getPort();
+        return blockServer == null ? 0 : blockServer.getPort();
     }
 
     @Override
     public void close() {
-        if (peerServer != null) {
-            peerServer.close();
+        if (blockServer != null) {
+            blockServer.close();
         }
     }
 
     private void startServer(int port) {
-        peerServer = new PeerServer(port, "node-" + nodeId, this::handleMessage, rejectionLog::add);
-    }
-
-    private void handleMessage(Message message) {
-        if (message.getType() == MessageType.BLOCK) {
-            try {
-                receiveBlock(Block.parse(message.getPayload()));
-            } catch (RuntimeException e) {
-                rejectionLog.add("parse:" + e.getMessage());
-            }
-        }
+        blockServer = new BlockServer(nodeId, port, this::receiveBlock, rejectionLog::add);
     }
 
     private void restoreBlocks() {
@@ -135,19 +122,4 @@ public class BlockchainNode implements AutoCloseable {
         }
     }
 
-    private void broadcast(Block block) {
-        synchronized (peers) {
-            for (Peer peer : peers) {
-                sendBlock(peer, block);
-            }
-        }
-    }
-
-    private void sendBlock(Peer peer, Block block) {
-        try {
-            peerClient.sendBlock(peer, block);
-        } catch (IOException ignored) {
-            rejectionLog.add("network:peer unavailable " + peer.getHost() + ":" + peer.getPort());
-        }
-    }
 }
