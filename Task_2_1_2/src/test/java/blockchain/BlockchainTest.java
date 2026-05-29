@@ -10,7 +10,7 @@ class BlockchainTest {
     @Test
     void rejectsBlockWithInvalidPrimeProof() {
         Blockchain blockchain = new Blockchain(new int[] {9});
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask("test");
 
         Block fake = blockchain.createNextBlock(task, CheckResult.PRIME, "3", "evil");
 
@@ -20,7 +20,7 @@ class BlockchainTest {
     @Test
     void rejectsBlockWithInvalidCompositeProof() {
         Blockchain blockchain = new Blockchain(new int[] {7});
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask("test");
 
         Block fake = blockchain.createNextBlock(task, CheckResult.COMPOSITE, "2", "evil");
 
@@ -30,7 +30,7 @@ class BlockchainTest {
     @Test
     void acceptsValidCompositeBlockAndDerivesResult() {
         Blockchain blockchain = new Blockchain(new int[] {9});
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask("test");
 
         Block valid = blockchain.createNextBlock(task, CheckResult.COMPOSITE, "3", "honest");
 
@@ -51,7 +51,7 @@ class BlockchainTest {
     @Test
     void rejectsDuplicateTaskInSameChain() {
         Blockchain blockchain = new Blockchain(new int[] {13});
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask("test");
         Block first = blockchain.createNextBlock(task, CheckResult.PRIME, "3", "n1");
         assertTrue(blockchain.addBlock(first).isAccepted());
 

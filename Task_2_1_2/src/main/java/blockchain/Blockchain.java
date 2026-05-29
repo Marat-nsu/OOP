@@ -42,10 +42,6 @@ public class Blockchain {
         return Block.mine(heightOf(bestTipHash) + 1, bestTipHash, task, result, proof, nodeId);
     }
 
-    public TaskDefinition findOpenTask() {
-        return findOpenTask(null);
-    }
-
     public synchronized TaskDefinition findOpenTask(String minerId) {
         Set<String> closed = closedTasks(bestChain());
         int startIndex = startIndexFor(minerId);

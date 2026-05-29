@@ -17,7 +17,7 @@ class BlockStorageTest {
     @Test
     void storesBlocksInAppendOnlyLogAndReadsThemBack() throws Exception {
         Blockchain blockchain = new Blockchain(new int[] {9});
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask("test");
         Block block = blockchain.createNextBlock(task, CheckResult.COMPOSITE, "3", "node");
         Path file = tempDir.resolve("blocks.log");
 
