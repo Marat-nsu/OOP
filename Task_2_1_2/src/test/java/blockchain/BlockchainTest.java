@@ -1,6 +1,7 @@
 package blockchain;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,16 @@ class BlockchainTest {
 
         assertTrue(blockchain.addBlock(valid).isAccepted());
         assertTrue(blockchain.containsNonPrime());
+    }
+
+    @Test
+    void minerIdChangesPreferredOpenTask() {
+        Blockchain blockchain = new Blockchain(new int[] {2, 3, 5, 7});
+
+        TaskDefinition first = blockchain.findOpenTask("a");
+        TaskDefinition second = blockchain.findOpenTask("b");
+
+        assertNotEquals(first.getTaskId(), second.getTaskId());
     }
 
     @Test

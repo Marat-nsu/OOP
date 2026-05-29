@@ -49,7 +49,7 @@ public class BlockchainNode implements AutoCloseable {
     }
 
     public Block mineOneBlock() {
-        TaskDefinition task = blockchain.findOpenTask();
+        TaskDefinition task = blockchain.findOpenTask(nodeId);
         if (task == null) {
             return null;
         }
@@ -77,7 +77,9 @@ public class BlockchainNode implements AutoCloseable {
     }
 
     public List<String> getRejectionLog() {
-        return List.copyOf(rejectionLog);
+        synchronized (rejectionLog) {
+            return List.copyOf(rejectionLog);
+        }
     }
 
     public int getPort() {

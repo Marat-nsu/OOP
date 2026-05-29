@@ -14,7 +14,12 @@ public class PeerServer implements AutoCloseable {
     private Thread serverThread;
     private volatile boolean running;
 
-    public PeerServer(int port, String threadName, Consumer<Message> messageHandler, Consumer<String> errorHandler) {
+    public PeerServer(
+        int port,
+        String threadName,
+        Consumer<Message> messageHandler,
+        Consumer<String> errorHandler
+    ) {
         this.messageHandler = messageHandler;
         this.errorHandler = errorHandler;
         start(port, threadName);
@@ -50,7 +55,9 @@ public class PeerServer implements AutoCloseable {
     private void acceptLoop() {
         while (running) {
             try (Socket socket = serverSocket.accept();
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                 BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(socket.getInputStream())
+                 )) {
                 String line = reader.readLine();
                 if (line != null) {
                     messageHandler.accept(Message.parse(line));

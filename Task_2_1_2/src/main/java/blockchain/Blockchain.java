@@ -42,9 +42,15 @@ public class Blockchain {
         return Block.mine(heightOf(bestTipHash) + 1, bestTipHash, task, result, proof, nodeId);
     }
 
-    public synchronized TaskDefinition findOpenTask() {
+    public TaskDefinition findOpenTask() {
+        return findOpenTask(null);
+    }
+
+    public synchronized TaskDefinition findOpenTask(String minerId) {
         Set<String> closed = closedTasks(bestChain());
-        for (TaskDefinition task : tasks) {
+        int startIndex = startIndexFor(minerId);
+        for (int offset = 0; offset < tasks.size(); offset++) {
+            TaskDefinition task = tasks.get((startIndex + offset) % tasks.size());
             if (!closed.contains(task.getTaskId())) {
                 return task;
             }
@@ -60,7 +66,7 @@ public class Blockchain {
         return closedTasks(bestChain()).size() == tasks.size();
     }
 
-    private synchronized List<Block> bestChain() {
+    private List<Block> bestChain() {
         return chainTo(bestTipHash);
     }
 
@@ -129,6 +135,13 @@ public class Blockchain {
         }
         Block block = blocksByHash.get(hash);
         return block == null ? -1 : block.getHeight();
+    }
+
+    private int startIndexFor(String minerId) {
+        if (tasks.isEmpty() || minerId == null || minerId.isEmpty()) {
+            return 0;
+        }
+        return Math.floorMod(minerId.hashCode(), tasks.size());
     }
 
     private Set<String> closedTasks(List<Block> chain) {
